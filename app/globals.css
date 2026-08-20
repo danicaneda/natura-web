@@ -33,17 +33,21 @@
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --nav-h:       72px;
 
+  --mobile-nav-h: 64px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
   --fab-b1: 24px;
   --fab-b2: 88px;
   --back-top-b: 24px;
+  --cookie-b: calc(var(--safe-b) + 16px);
 }
 
 @media (max-width: 767px) {
   :root {
-    --nav-h: 64px;
-    --fab-b1: 84px;
-    --fab-b2: 148px;
-    --back-top-b: 84px;
+    --nav-h: 60px;
+    /* Todo lo fijado por debajo sube por encima de la tab-bar móvil */
+    --fab-b2: calc(var(--mobile-nav-h) + var(--safe-b) + 16px);
+    --back-top-b: calc(var(--mobile-nav-h) + var(--safe-b) + 16px);
+    --cookie-b: calc(var(--mobile-nav-h) + var(--safe-b) + 12px);
   }
 }
 
@@ -55,7 +59,11 @@ html {
   scroll-padding-top: var(--nav-h);
   text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
+
+/* Elimina el delay de 300ms en tap iOS y evita zoom por doble-tap en botones */
+button, a, [role="button"], input, select, textarea, label { touch-action: manipulation; }
 
 body {
   background: var(--color-cream);
@@ -283,12 +291,12 @@ button:focus-visible, a:focus-visible { outline-offset: 4px; }
 }
 .n-card:hover { border-color: var(--rule); box-shadow: var(--shadow-md); }
 
-/* Field (form inputs) */
+/* Field (form inputs) — 16px min en móvil para evitar zoom iOS Safari */
 .n-field {
   width: 100%;
   padding: 12px 0;
   font-family: var(--font-sans);
-  font-size: 0.9375rem;
+  font-size: 16px;
   color: var(--color-ink-2);
   background: transparent;
   border: 0;
@@ -296,9 +304,33 @@ button:focus-visible, a:focus-visible { outline-offset: 4px; }
   outline: none;
   transition: border-color 0.2s ease;
 }
+@media (min-width: 768px) { .n-field { font-size: 0.9375rem; } }
 .n-field:focus { border-bottom-color: var(--color-gold); }
 .n-field::placeholder { color: var(--color-ink-5); font-weight: 300; }
 .n-field[aria-invalid="true"] { border-bottom-color: var(--color-danger); }
+
+/* Touch target garantizado 44x44 (WCAG 2.5.5) */
+.n-tap {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Scroll horizontal con snap (para chips/filtros) */
+.n-hscroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-inline: 24px;
+  margin-inline: -24px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.n-hscroll::-webkit-scrollbar { display: none; }
+.n-hscroll > * { scroll-snap-align: start; flex: none; }
 
 .n-label {
   font-family: var(--font-sans);
@@ -408,4 +440,16 @@ button:focus-visible, a:focus-visible { outline-offset: 4px; }
 .n-hairline {
   background-image: linear-gradient(to bottom, transparent 0, transparent 32px, var(--rule-soft) 32px, var(--rule-soft) 33px, transparent 33px);
   background-size: 100% 33px;
+}
+
+/* Stats grid dividers (2 col móvil → 4 col desktop) */
+.n-stat {
+  border-right: 1px solid var(--rule-soft);
+  border-bottom: 1px solid var(--rule-soft);
+}
+.n-stat:nth-child(2n) { border-right: 0; }
+.n-stat:nth-last-child(-n+2) { border-bottom: 0; }
+@media (min-width: 768px) {
+  .n-stat { border-right: 1px solid var(--rule-soft); border-bottom: 0; }
+  .n-stat:last-child { border-right: 0; }
 }

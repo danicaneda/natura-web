@@ -50,14 +50,14 @@ export default function HeroSection() {
       <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, transparent 45%, rgba(6,4,1,0.55) 100%)" }} />
 
       {/* Contenido */}
-      <div className="relative z-10 n-container pt-[calc(var(--nav-h)+40px)] pb-32 md:pb-40 flex flex-col items-start">
+      <div className="relative z-10 n-container pt-[calc(var(--nav-h)+32px)] pb-24 sm:pb-32 md:pb-40 flex flex-col items-start">
         {/* Eyebrow */}
         <div
-          className="flex items-center gap-3 mb-8 transition-opacity duration-700"
+          className="flex items-center gap-3 mb-6 md:mb-8 transition-opacity duration-700"
           style={{ opacity: loaded ? 1 : 0 }}
         >
-          <span className="block w-8 h-px bg-[color:var(--color-gold-2)] opacity-70" />
-          <span className="text-[0.62rem] tracking-[0.34em] uppercase font-medium text-[rgba(245,230,192,0.7)]">
+          <span className="block w-6 sm:w-8 h-px bg-[color:var(--color-gold-2)] opacity-70" />
+          <span className="text-[0.58rem] sm:text-[0.62rem] tracking-[0.28em] sm:tracking-[0.34em] uppercase font-medium text-[rgba(245,230,192,0.7)]">
             Floristería · {SITE.city} · {SITE.region}
           </span>
         </div>
@@ -91,7 +91,7 @@ export default function HeroSection() {
 
         {/* Subtitle */}
         <p
-          className="mt-8 max-w-xl text-[rgba(250,246,238,0.72)] text-base md:text-lg font-light leading-relaxed transition-opacity duration-700"
+          className="mt-6 md:mt-8 max-w-xl text-[rgba(250,246,238,0.72)] text-[0.95rem] sm:text-base md:text-lg font-light leading-relaxed transition-opacity duration-700"
           style={{ opacity: loaded ? 1 : 0, transitionDelay: "500ms" }}
         >
           Ramos, plantas y arte floral con firma propia.
@@ -100,7 +100,7 @@ export default function HeroSection() {
 
         {/* CTAs */}
         <div
-          className="mt-10 flex flex-wrap items-center gap-3 transition-all duration-700"
+          className="mt-8 md:mt-10 flex flex-col sm:flex-row w-full sm:w-auto items-stretch sm:items-center gap-3 transition-all duration-700"
           style={{
             opacity: loaded ? 1 : 0,
             transform: loaded ? "translateY(0)" : "translateY(12px)",
@@ -109,7 +109,7 @@ export default function HeroSection() {
         >
           <button
             onClick={() => scrollTo("productos")}
-            className="n-btn n-btn-gold"
+            className="n-btn n-btn-gold justify-center"
           >
             Ver colección
             <ArrowRight size={14} />
@@ -118,7 +118,7 @@ export default function HeroSection() {
             href={SITE.whatsapp.url("Hola, me gustaría hacer un pedido.")}
             target="_blank"
             rel="noopener noreferrer"
-            className="n-btn n-btn-ghost-dark"
+            className="n-btn n-btn-ghost-dark justify-center"
           >
             <WhatsAppIcon size={13} />
             Pedir por WhatsApp
@@ -127,7 +127,7 @@ export default function HeroSection() {
 
         {/* Prueba social */}
         <div
-          className="mt-12 flex items-center gap-3 text-[rgba(245,230,192,0.55)] transition-opacity duration-700"
+          className="mt-10 md:mt-12 flex items-center gap-3 text-[rgba(245,230,192,0.55)] transition-opacity duration-700"
           style={{ opacity: loaded ? 1 : 0, transitionDelay: "800ms" }}
         >
           <span className="flex text-[color:var(--color-gold-2)] gap-0.5">
@@ -141,10 +141,10 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Scroll cue */}
+      {/* Scroll cue — solo desktop, en móvil resta espacio útil */}
       <button
         onClick={() => scrollTo("nosotros")}
-        className="absolute left-1/2 -translate-x-1/2 bottom-6 flex flex-col items-center gap-2 text-[rgba(245,230,192,0.45)] hover:text-[color:var(--color-gold-2)] transition-colors"
+        className="hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-6 flex-col items-center gap-2 text-[rgba(245,230,192,0.45)] hover:text-[color:var(--color-gold-2)] transition-colors"
         aria-label="Descubrir"
       >
         <span className="text-[0.6rem] tracking-[0.32em] uppercase">Descubrir</span>

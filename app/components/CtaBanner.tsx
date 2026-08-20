@@ -20,9 +20,9 @@ export default function CtaBanner() {
         <span
           className="font-serif whitespace-nowrap"
           style={{
-            fontSize: "clamp(96px, 20vw, 240px)",
+            fontSize: "clamp(72px, 18vw, 240px)",
             color: "rgba(212,160,23,0.055)",
-            letterSpacing: "0.16em",
+            letterSpacing: "0.14em",
             lineHeight: 1,
             fontWeight: 300,
             maxWidth: "100%",
@@ -70,14 +70,14 @@ export default function CtaBanner() {
           ))}
         </ul>
 
-        <div className="flex flex-col sm:flex-row gap-3 items-center mt-2">
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mt-2 w-full sm:w-auto">
           <a
             href="#contacto"
             onClick={(e) => {
               e.preventDefault();
               document.getElementById("contacto")?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="n-btn n-btn-gold"
+            className="n-btn n-btn-gold justify-center"
           >
             Solicitar presupuesto
             <ArrowRight size={14} />
@@ -86,7 +86,7 @@ export default function CtaBanner() {
             href={SITE.whatsapp.url("Hola, me gustaría consultar sobre un evento especial.")}
             target="_blank"
             rel="noopener noreferrer"
-            className="n-btn n-btn-ghost-dark"
+            className="n-btn n-btn-ghost-dark justify-center"
           >
             <WhatsAppIcon size={13} />
             WhatsApp directo

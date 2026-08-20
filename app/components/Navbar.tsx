@@ -131,7 +131,7 @@ export default function Navbar() {
           {/* Mobile phone quick action */}
           <a
             href={`tel:${SITE.phone.tel}`}
-            className={`md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full transition-colors ${solid ? "bg-[color:var(--color-gold)] text-[color:var(--color-cream)]" : "bg-[rgba(250,246,238,0.14)] text-[color:var(--color-cream)] backdrop-blur"}`}
+            className={`md:hidden inline-flex items-center justify-center w-11 h-11 rounded-full transition-colors ${solid ? "bg-[color:var(--color-gold)] text-[color:var(--color-cream)] active:bg-[color:var(--color-gold-3)]" : "bg-[rgba(250,246,238,0.14)] text-[color:var(--color-cream)] backdrop-blur active:bg-[rgba(250,246,238,0.24)]"}`}
             aria-label={`Llamar a ${SITE.phone.display}`}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -141,7 +141,7 @@ export default function Navbar() {
 
           {/* Hamburger */}
           <button
-            className="md:hidden flex flex-col items-center justify-center gap-1.5 w-10 h-10"
+            className="md:hidden flex flex-col items-center justify-center gap-1.5 w-11 h-11"
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
@@ -180,19 +180,31 @@ export default function Navbar() {
           borderTop: menuOpen ? "1px solid var(--rule-soft)" : "1px solid transparent",
         }}
       >
-        <div className="n-container py-6 flex flex-col gap-1">
+        <div className="n-container py-5 flex flex-col gap-1">
+          {/* Estado abierto/cerrado dentro del drawer */}
+          <div className="pb-3 mb-2 border-b border-[color:var(--rule-soft)] flex justify-start">
+            <OpenStatusBadge />
+          </div>
+
           {NAV_LINKS.map((link) => {
             const isActive = active === link.id;
             return (
               <button
                 key={link.id}
                 onClick={() => scrollTo(link.id)}
-                className={`text-left py-3 px-3 text-sm tracking-[0.05em] transition-colors ${
-                  isActive ? "text-[color:var(--color-gold-3)]" : "text-[color:var(--color-ink-3)]"
+                className={`text-left py-4 px-3 text-[0.95rem] font-medium tracking-[0.05em] transition-colors flex items-center justify-between ${
+                  isActive ? "text-[color:var(--color-gold-3)]" : "text-[color:var(--color-ink-3)] active:text-[color:var(--color-gold-3)]"
                 }`}
                 style={{ borderLeft: isActive ? "2px solid var(--color-gold)" : "2px solid transparent" }}
               >
-                {link.label}
+                <span>{link.label}</span>
+                {isActive && (
+                  <span aria-hidden="true" className="text-[color:var(--color-gold)]">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                )}
               </button>
             );
           })}
@@ -200,14 +212,14 @@ export default function Navbar() {
             href={SITE.whatsapp.url("Hola, me gustaría hacer una consulta.")}
             target="_blank"
             rel="noopener noreferrer"
-            className="n-btn n-btn-gold mt-4"
+            className="n-btn n-btn-whatsapp mt-4 justify-center"
           >
             <WhatsAppIcon size={13} />
             <span>Pedir por WhatsApp</span>
           </a>
           <a
             href={`tel:${SITE.phone.tel}`}
-            className="n-btn n-btn-ghost mt-2"
+            className="n-btn n-btn-ghost mt-2 justify-center"
           >
             Llamar · {SITE.phone.display}
           </a>

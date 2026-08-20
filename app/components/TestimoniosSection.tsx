@@ -148,26 +148,26 @@ export default function TestimoniosSection() {
               <button
                 onClick={prev}
                 aria-label="Testimonio anterior"
-                className="w-10 h-10 flex items-center justify-center border border-[color:var(--rule)] text-[color:var(--color-gold-3)] hover:bg-[rgba(184,134,11,0.06)] transition-colors"
+                className="w-11 h-11 flex items-center justify-center border border-[color:var(--rule)] text-[color:var(--color-gold-3)] hover:bg-[rgba(184,134,11,0.06)] active:bg-[rgba(184,134,11,0.1)] transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
               <button
                 onClick={next}
                 aria-label="Testimonio siguiente"
-                className="w-10 h-10 flex items-center justify-center border border-[color:var(--rule)] text-[color:var(--color-gold-3)] hover:bg-[rgba(184,134,11,0.06)] transition-colors"
+                className="w-11 h-11 flex items-center justify-center border border-[color:var(--rule)] text-[color:var(--color-gold-3)] hover:bg-[rgba(184,134,11,0.06)] active:bg-[rgba(184,134,11,0.1)] transition-colors"
               >
                 <ChevronRight size={14} />
               </button>
             </div>
 
-            <div className="flex gap-1.5 items-center">
+            <div className="hidden sm:flex gap-1.5 items-center">
               {testimonios.slice(0, Math.min(total, 12)).map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
                   aria-label={`Ir a testimonio ${i + 1}`}
-                  className="p-2"
+                  className="n-tap"
                 >
                   <span
                     className="block transition-all duration-300"

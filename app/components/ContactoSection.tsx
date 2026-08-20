@@ -194,6 +194,8 @@ export default function ContactoSection() {
                       value={form.nombre}
                       onChange={(e) => set("nombre", e.target.value)}
                       autoComplete="name"
+                      autoCapitalize="words"
+                      enterKeyHint="next"
                       className="n-field"
                       aria-invalid={!!errors.nombre}
                       aria-describedby={errors.nombre ? "err-nombre" : undefined}
@@ -209,6 +211,11 @@ export default function ContactoSection() {
                       value={form.email}
                       onChange={(e) => set("email", e.target.value)}
                       autoComplete="email"
+                      inputMode="email"
+                      autoCapitalize="off"
+                      autoCorrect="off"
+                      spellCheck={false}
+                      enterKeyHint="next"
                       className="n-field"
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? "err-email" : undefined}
@@ -224,6 +231,8 @@ export default function ContactoSection() {
                       value={form.telefono}
                       onChange={(e) => set("telefono", e.target.value)}
                       autoComplete="tel"
+                      inputMode="tel"
+                      enterKeyHint="next"
                       className="n-field"
                       placeholder="+34 606 59 81 56"
                     />
@@ -263,6 +272,8 @@ export default function ContactoSection() {
                     maxLength={500}
                     value={form.mensaje}
                     onChange={(e) => set("mensaje", e.target.value)}
+                    enterKeyHint="send"
+                    autoCapitalize="sentences"
                     className="n-field resize-none"
                     placeholder="Cuéntanos qué necesitas: tipo de flores, ocasión, presupuesto, fecha…"
                     aria-invalid={!!errors.mensaje}

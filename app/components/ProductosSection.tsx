@@ -130,20 +130,20 @@ function ProductModal({ p, onClose }: { p: Producto; onClose: () => void }) {
       role="dialog"
       aria-modal="true"
       aria-label={p.nombre}
-      className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center sm:p-4"
       style={{ background: "rgba(15,10,5,0.72)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="relative bg-[color:var(--color-cream)] w-full max-w-3xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-[var(--shadow-lg)]">
+      <div className="relative bg-[color:var(--color-cream)] w-full max-w-3xl max-h-[94vh] sm:max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-[var(--shadow-lg)] rounded-t-2xl sm:rounded-none">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-[rgba(15,10,5,0.06)] rounded-full text-[color:var(--color-ink-2)] hover:bg-[rgba(15,10,5,0.12)] transition-colors z-10"
+          className="absolute top-3 right-3 w-11 h-11 flex items-center justify-center bg-[rgba(15,10,5,0.08)] rounded-full text-[color:var(--color-ink-2)] hover:bg-[rgba(15,10,5,0.16)] active:bg-[rgba(15,10,5,0.22)] transition-colors z-10 backdrop-blur-sm"
           aria-label="Cerrar"
         >
-          <Close size={12} />
+          <Close size={14} />
         </button>
 
-        <div className="md:w-[52%] relative bg-[color:var(--color-cream-2)] aspect-[4/5] md:aspect-auto md:min-h-[440px]">
+        <div className="md:w-[52%] relative bg-[color:var(--color-cream-2)] aspect-[4/5] md:aspect-auto md:min-h-[440px] flex-none">
           {img ? (
             <Image src={img} alt={p.nombre} fill sizes="(max-width: 768px) 100vw, 420px" className="object-cover" />
           ) : (
@@ -153,37 +153,43 @@ function ProductModal({ p, onClose }: { p: Producto; onClose: () => void }) {
           )}
         </div>
 
-        <div className="md:w-[48%] p-7 md:p-8 overflow-y-auto flex flex-col gap-4">
-          <div className="flex gap-2 flex-wrap">
-            {p.destacado && <span className="n-chip">Destacado</span>}
-            {hasOffer && <span className="n-chip" style={{ color: "var(--color-danger)", borderColor: "rgba(139,42,42,0.25)", background: "rgba(139,42,42,0.05)" }}>Oferta</span>}
-            <span className="n-chip">{p.categoria}</span>
-          </div>
-
-          <h3 className="font-serif text-3xl text-[color:var(--color-ink-2)] leading-tight">{p.nombre}</h3>
-
-          <div className="flex items-baseline gap-3">
-            {hasOffer && p.precio && (
-              <span className="text-sm line-through text-[color:var(--color-ink-5)]">{formatPrice(p.precio)}</span>
-            )}
-            {price != null && (
-              <span className="font-serif text-2xl text-[color:var(--color-gold)]">{formatPrice(price)}</span>
-            )}
-          </div>
-
-          {p.descripcion && (
-            <p className="n-body max-w-md">{p.descripcion}</p>
-          )}
-
-          {p.etiquetas?.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-2">
-              {p.etiquetas.map((t) => (
-                <span key={t} className="n-chip" style={{ padding: "2px 8px", fontSize: "0.62rem" }}>{t}</span>
-              ))}
+        <div className="md:w-[48%] flex flex-col min-h-0 flex-1">
+          <div className="p-6 sm:p-7 md:p-8 overflow-y-auto flex flex-col gap-4 flex-1" style={{ overscrollBehavior: "contain" }}>
+            <div className="flex gap-2 flex-wrap">
+              {p.destacado && <span className="n-chip">Destacado</span>}
+              {hasOffer && <span className="n-chip" style={{ color: "var(--color-danger)", borderColor: "rgba(139,42,42,0.25)", background: "rgba(139,42,42,0.05)" }}>Oferta</span>}
+              <span className="n-chip">{p.categoria}</span>
             </div>
-          )}
 
-          <div className="mt-auto flex flex-col gap-2 pt-4">
+            <h3 className="font-serif text-2xl sm:text-3xl text-[color:var(--color-ink-2)] leading-tight">{p.nombre}</h3>
+
+            <div className="flex items-baseline gap-3">
+              {hasOffer && p.precio && (
+                <span className="text-sm line-through text-[color:var(--color-ink-5)]">{formatPrice(p.precio)}</span>
+              )}
+              {price != null && (
+                <span className="font-serif text-2xl text-[color:var(--color-gold)]">{formatPrice(price)}</span>
+              )}
+            </div>
+
+            {p.descripcion && (
+              <p className="n-body max-w-md">{p.descripcion}</p>
+            )}
+
+            {p.etiquetas?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-2">
+                {p.etiquetas.map((t) => (
+                  <span key={t} className="n-chip" style={{ padding: "2px 8px", fontSize: "0.62rem" }}>{t}</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Barra CTA sticky bottom — al alcance del pulgar en móvil */}
+          <div
+            className="flex-none border-t border-[color:var(--rule-soft)] bg-[color:var(--color-cream)] px-6 py-4 sm:px-7 sm:py-5 flex flex-col gap-2"
+            style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}
+          >
             <a
               href={SITE.whatsapp.url(waText)}
               target="_blank"
@@ -299,8 +305,8 @@ export default function ProductosSection() {
           </div>
         )}
 
-        {/* Filtros */}
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
+        {/* Filtros — scroll horizontal snap en móvil, wrap centrado en desktop */}
+        <div className="mt-8 n-hscroll sm:!flex sm:!overflow-visible sm:!p-0 sm:!m-0 sm:flex-wrap sm:justify-center" role="tablist" aria-label="Filtrar productos por categoría">
           {CATEGORIAS.map((c) => {
             const count = countBy(c.key);
             if (count === 0 && c.key !== "todos") return null;
@@ -309,10 +315,12 @@ export default function ProductosSection() {
               <button
                 key={c.key}
                 onClick={() => setCat(c.key)}
-                className={`px-4 py-2 text-[0.68rem] tracking-[0.18em] uppercase border transition-colors ${
+                role="tab"
+                aria-selected={active}
+                className={`px-4 py-2.5 text-[0.68rem] tracking-[0.18em] uppercase border transition-colors whitespace-nowrap ${
                   active
                     ? "bg-[color:var(--color-ink-2)] text-[color:var(--color-cream)] border-[color:var(--color-ink-2)]"
-                    : "bg-transparent text-[color:var(--color-ink-4)] border-[color:var(--rule)] hover:text-[color:var(--color-ink-2)] hover:border-[color:var(--color-gold)]"
+                    : "bg-[color:var(--color-cream)] text-[color:var(--color-ink-4)] border-[color:var(--rule)] hover:text-[color:var(--color-ink-2)] hover:border-[color:var(--color-gold)] active:bg-[rgba(184,134,11,0.06)]"
                 }`}
               >
                 {c.label}

@@ -81,27 +81,32 @@ export default function MobileNav() {
         WebkitBackdropFilter: "blur(14px)",
         borderTop: "1px solid var(--rule-soft)",
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        boxShadow: "0 -6px 20px rgba(15,10,5,0.05)",
       }}
       aria-label="Navegación móvil"
     >
-      <div className="flex h-16">
+      <div className="flex" style={{ height: "var(--mobile-nav-h)" }}>
         {ITEMS.map((item) => {
           const isActive = active === item.id;
           return (
             <button
               key={item.id}
               onClick={() => scrollTo(item.id)}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${
-                isActive ? "text-[color:var(--color-gold-3)]" : "text-[color:var(--color-ink-4)]"
+              className={`flex-1 flex flex-col items-center justify-center gap-1 transition-colors relative ${
+                isActive ? "text-[color:var(--color-gold-3)]" : "text-[color:var(--color-ink-4)] active:text-[color:var(--color-gold-3)]"
               }`}
+              aria-current={isActive ? "page" : undefined}
             >
-              <span className="relative flex items-center justify-center">
-                {isActive && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute -top-4 h-[2px] w-6 rounded-full bg-[color:var(--color-gold)]"
-                  />
-                )}
+              {isActive && (
+                <span
+                  aria-hidden="true"
+                  className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-full bg-[color:var(--color-gold)]"
+                />
+              )}
+              <span
+                className="flex items-center justify-center transition-transform duration-300"
+                style={{ transform: isActive ? "translateY(-1px)" : "none" }}
+              >
                 {item.svg}
               </span>
               <span className="text-[0.55rem] tracking-[0.12em] uppercase font-medium">{item.label}</span>
@@ -113,11 +118,12 @@ export default function MobileNav() {
           href={SITE.whatsapp.url("Hola, me gustaría hacer un pedido.")}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 flex flex-col items-center justify-center gap-1 text-[color:#128C7E]"
+          className="flex-1 flex flex-col items-center justify-center gap-1 text-white relative overflow-hidden"
+          style={{ background: "linear-gradient(180deg, #14A896, #128C7E)" }}
           aria-label="Escribir por WhatsApp"
         >
-          <WhatsAppIcon size={18} />
-          <span className="text-[0.55rem] tracking-[0.12em] uppercase font-medium">Pedir</span>
+          <WhatsAppIcon size={20} />
+          <span className="text-[0.55rem] tracking-[0.12em] uppercase font-semibold">Pedir</span>
         </a>
       </div>
     </nav>

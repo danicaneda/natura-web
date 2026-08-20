@@ -174,20 +174,17 @@ export default function NosotrosSection() {
           </div>
         </div>
 
-        {/* Stats — franja limpia */}
-        <div className="mt-24 grid grid-cols-2 md:grid-cols-4 border-y border-[color:var(--rule-soft)]">
-          {STATS.map((s, i) => (
+        {/* Stats — franja limpia. Los borders los pinta la clase .n-stat (2 col móvil / 4 col desktop) */}
+        <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 border-y border-[color:var(--rule-soft)]">
+          {STATS.map((s) => (
             <div
               key={s.label}
-              className="flex flex-col items-center text-center py-10 px-6"
-              style={{
-                borderRight: i < STATS.length - 1 ? "1px solid var(--rule-soft)" : "none",
-              }}
+              className="n-stat flex flex-col items-center text-center py-8 md:py-10 px-4 md:px-6"
             >
-              <span className="font-serif text-[clamp(2rem,4vw,3rem)] font-light text-[color:var(--color-gold)] leading-none">
+              <span className="font-serif text-[clamp(1.75rem,4vw,3rem)] font-light text-[color:var(--color-gold)] leading-none">
                 <CountUp to={s.value} suffix={s.suffix} />
               </span>
-              <span className="mt-3 text-[0.62rem] tracking-[0.22em] uppercase text-[color:var(--color-ink-4)]">
+              <span className="mt-3 text-[0.58rem] md:text-[0.62rem] tracking-[0.2em] md:tracking-[0.22em] uppercase text-[color:var(--color-ink-4)] leading-snug">
                 {s.label}
               </span>
             </div>

@@ -23,11 +23,13 @@ export default function CookieBanner() {
     <div
       role="dialog"
       aria-label="Aviso de cookies"
-      className="fixed z-40 max-w-md rounded-md md:rounded-none md:max-w-none"
+      className="fixed z-40 max-w-md md:max-w-none"
       style={{
         left: "16px",
         right: "16px",
-        bottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)",
+        // En móvil sube por encima de la tab-bar (MobileNav) para no solaparse.
+        // En desktop se pega al pie con safe-area normal.
+        bottom: "var(--cookie-b)",
         background: "var(--color-ink-2)",
         color: "var(--color-cream)",
         border: "1px solid rgba(212,160,23,0.16)",
