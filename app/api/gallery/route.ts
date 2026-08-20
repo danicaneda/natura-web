@@ -4,9 +4,19 @@ const BACKEND = process.env.BACKEND_URL ?? 'http://localhost:8001';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const res = await fetch(`${BACKEND}/api/gallery`, {
+    const { searchParams } = new URL(request.url);
+
+    let url = `${BACKEND}/api/gallery`;
+    const params: string[] = [];
+    const categoria = searchParams.get('categoria');
+    const limit = searchParams.get('limit');
+    if (categoria) params.push(`categoria=${encodeURIComponent(categoria)}`);
+    if (limit) params.push(`limit=${encodeURIComponent(limit)}`);
+    if (params.length) url += `?${params.join('&')}`;
+
+    const res = await fetch(url, {
       cache: 'no-store',
       signal: AbortSignal.timeout(8000),
     });

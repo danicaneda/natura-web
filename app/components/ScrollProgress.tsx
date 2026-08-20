@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 export default function ScrollProgress() {
   const barRef = useRef<HTMLDivElement>(null);
@@ -8,22 +8,22 @@ export default function ScrollProgress() {
   useEffect(() => {
     const bar = barRef.current;
     if (!bar) return;
+    let rafId = 0;
     const onScroll = () => {
-      const scrolled = window.scrollY;
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = total > 0 ? (scrolled / total) * 100 : 0;
-      bar.style.width = `${pct}%`;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const total = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = total > 0 ? (window.scrollY / total) * 100 : 0;
+        bar.style.width = `${pct}%`;
+      });
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
-  return (
-    <div
-      ref={barRef}
-      id="scroll-progress"
-      style={{ width: '0%' }}
-      aria-hidden="true"
-    />
-  );
+  return <div id="scroll-progress" ref={barRef} style={{ width: "0%" }} aria-hidden="true" />;
 }

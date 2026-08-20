@@ -1,66 +1,22 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
+import BotanicalMark from "./ui/BotanicalMark";
+import { ArrowRight } from "./ui/Icons";
+import { useReveal } from "@/app/lib/useReveal";
 
-const valores = [
-  {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <path d="M14 4C14 4 8 8 8 14a6 6 0 0012 0c0-6-6-10-6-10z" stroke="#B8860B" strokeWidth="1.4" strokeLinejoin="round" fill="rgba(184,134,11,0.08)"/>
-        <path d="M14 14v9" stroke="#B8860B" strokeWidth="1.4" strokeLinecap="round"/>
-      </svg>
-    ),
-    titulo: 'Frescura garantizada',
-    desc: 'Flores y plantas de temporada, renovadas cada día para asegurar la máxima calidad.',
-  },
-  {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="4" stroke="#B8860B" strokeWidth="1.4" fill="rgba(184,134,11,0.08)"/>
-        <path d="M14 4v4M14 20v4M4 14h4M20 14h4M7 7l2.8 2.8M18.2 18.2L21 21M7 21l2.8-2.8M18.2 9.8L21 7" stroke="#B8860B" strokeWidth="1.4" strokeLinecap="round"/>
-      </svg>
-    ),
-    titulo: 'Arreglos a medida',
-    desc: 'Composiciones personalizadas adaptadas a tu ocasión, gusto y presupuesto.',
-  },
-  {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <path d="M5 14h14M14 8l6 6-6 6" stroke="#B8860B" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M20 6c2 2 3 5 3 8s-1 6-3 8" stroke="#B8860B" strokeWidth="1.4" strokeLinecap="round" fill="rgba(184,134,11,0.08)"/>
-      </svg>
-    ),
-    titulo: 'Entrega a domicilio',
-    desc: 'Llevamos la naturaleza hasta tu puerta con mimo, puntualidad y cuidado.',
-  },
-  {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <path d="M14 6l2 5h5l-4 3 1.5 5L14 16l-4.5 3 1.5-5-4-3h5z" stroke="#B8860B" strokeWidth="1.4" strokeLinejoin="round" fill="rgba(184,134,11,0.08)"/>
-      </svg>
-    ),
-    titulo: 'Pasión floral',
-    desc: 'Más de 15 años dedicados al arte floral con amor, experiencia y profesionalidad.',
-  },
+const STATS = [
+  { value: 15,   label: "Años cuidando cada flor",  suffix: "+" },
+  { value: 120,  label: "Bodas y eventos",          suffix: "+" },
+  { value: 5.0,  label: "Valoración en Google",     suffix: "" },
+  { value: 100,  label: "Recomendaciones reales",   suffix: "%" },
 ];
 
-function useReveal(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, visible };
-}
-
-function CountUp({ to, suffix = '', duration = 1800 }: { to: number; suffix?: string; duration?: number }) {
+function CountUp({ to, suffix = "" }: { to: number; suffix?: string }) {
   const [val, setVal] = useState(0);
   const [started, setStarted] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
+  const isDecimal = !Number.isInteger(to);
 
   useEffect(() => {
     const el = ref.current;
@@ -74,140 +30,169 @@ function CountUp({ to, suffix = '', duration = 1800 }: { to: number; suffix?: st
 
   useEffect(() => {
     if (!started) return;
+    const dur = 1600;
     const start = performance.now();
-    const raf = (now: number) => {
-      const t = Math.min((now - start) / duration, 1);
+    const step = (now: number) => {
+      const t = Math.min((now - start) / dur, 1);
       const ease = 1 - Math.pow(1 - t, 3);
-      setVal(Math.round(ease * to));
-      if (t < 1) requestAnimationFrame(raf);
+      setVal(ease * to);
+      if (t < 1) requestAnimationFrame(step);
     };
-    requestAnimationFrame(raf);
-  }, [started, to, duration]);
-
-  return <span ref={ref}>{val}{suffix}</span>;
-}
-
-const STATS = [
-  { label: 'Años en Reinosa', value: 15, suffix: '+' },
-  { label: 'Clientes felices', value: 2400, suffix: '+' },
-  { label: 'Variedades', value: 500, suffix: '+' },
-  { label: 'Bodas & eventos', value: 500, suffix: '+' },
-];
-
-export default function NosotrosSection() {
-  const header = useReveal(0.2);
-  const grid = useReveal(0.1);
-  const cita = useReveal(0.3);
+    requestAnimationFrame(step);
+  }, [started, to]);
 
   return (
-    <section id="nosotros" style={{ background: '#F5EDD8', width: '100%', display: 'block' }}>
-      <div className="w-full max-w-6xl mx-auto px-6 py-28">
+    <span ref={ref} className="tabular-nums">
+      {isDecimal ? val.toFixed(1) : Math.round(val).toLocaleString("es-ES")}
+      {suffix}
+    </span>
+  );
+}
 
-        {/* Header */}
-        <div
-          ref={header.ref}
-          className="flex flex-col items-center text-center mb-20"
-          style={{
-            opacity: header.visible ? 1 : 0,
-            transform: header.visible ? 'translateY(0)' : 'translateY(22px)',
-            transition: 'opacity 0.7s ease, transform 0.7s ease',
-          }}
-        >
-          <p className="text-xs tracking-[0.3em] uppercase mb-4" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>
-            Quiénes somos
-          </p>
-          <h2 className="text-5xl md:text-6xl font-light mb-6" style={{ color: '#1A1208', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-            Arte floral <em>con alma</em>
-          </h2>
-          <div className="w-12 h-px mb-8" style={{ background: '#B8860B' }} />
-          <p className="text-base leading-relaxed max-w-2xl" style={{ color: '#4A3C28', fontFamily: 'Jost, sans-serif' }}>
-            En Natura creemos que las flores son la forma más pura de expresar lo que sentimos.
-            Cuidamos cada detalle para que cada ramo, cada planta y cada arreglo sea una obra de arte natural.
-            Trabajamos con cultivadores locales para garantizar la máxima frescura en cada creación.
-          </p>
-        </div>
+export default function NosotrosSection() {
+  const left = useReveal(0.1);
+  const right = useReveal(0.1);
 
-        {/* Grid de valores */}
-        <div ref={grid.ref} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {valores.map((v, i) => (
-            <div
-              key={v.titulo}
-              className="flex flex-col p-8 transition-all duration-300"
-              style={{
-                background: '#FAF6EE',
-                border: '1px solid rgba(184,134,11,0.12)',
-                opacity: grid.visible ? 1 : 0,
-                transform: grid.visible ? 'translateY(0)' : 'translateY(28px)',
-                transition: `opacity 0.65s ease ${i * 100}ms, transform 0.65s ease ${i * 100}ms, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease`,
-              }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.background = '#FFFFFF';
-                el.style.borderColor = 'rgba(184,134,11,0.28)';
-                el.style.boxShadow = '0 6px 24px rgba(184,134,11,0.1)';
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.background = '#FAF6EE';
-                el.style.borderColor = 'rgba(184,134,11,0.12)';
-                el.style.boxShadow = 'none';
-              }}
-            >
-              <div className="mb-6">{v.icon}</div>
-              <h3 className="text-lg mb-3" style={{ color: '#1A1208', fontFamily: 'Jost, sans-serif', fontSize: '1.05rem', fontWeight: 500, letterSpacing: '0.01em' }}>
-                {v.titulo}
-              </h3>
-              <p className="text-sm leading-relaxed" style={{ color: '#8A7560', fontFamily: 'Jost, sans-serif' }}>
-                {v.desc}
-              </p>
+  return (
+    <section id="nosotros" className="bg-[color:var(--color-cream)]">
+      <div className="n-container n-section-y">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+          {/* Left — composición editorial */}
+          <div
+            ref={left.ref}
+            className={`n-reveal ${left.visible ? "is-visible" : ""} lg:col-span-5 relative`}
+          >
+            <div className="relative aspect-[4/5] overflow-hidden bg-[color:var(--color-cream-2)]">
+              {/* SVG botánico grande */}
+              <svg viewBox="0 0 400 500" fill="none" aria-hidden="true" className="absolute inset-0 w-full h-full opacity-[0.16]">
+                <path d="M200 480 Q195 340 200 60" stroke="#6B4A0A" strokeWidth="3.5" strokeLinecap="round" />
+                <ellipse cx="200" cy="280" rx="70" ry="130" transform="rotate(20 200 280)" fill="#6B4A0A" opacity="0.85" />
+                <ellipse cx="200" cy="200" rx="58" ry="105" transform="rotate(-16 200 200)" fill="#6B4A0A" opacity="0.75" />
+                <ellipse cx="200" cy="130" rx="42" ry="85" transform="rotate(8 200 130)" fill="#6B4A0A" opacity="0.65" />
+                <path d="M200 240 Q262 210 300 190" stroke="#6B4A0A" strokeWidth="2" strokeLinecap="round" />
+                <ellipse cx="290" cy="192" rx="34" ry="60" transform="rotate(-30 290 192)" fill="#6B4A0A" opacity="0.55" />
+                <path d="M200 175 Q140 148 105 130" stroke="#6B4A0A" strokeWidth="2" strokeLinecap="round" />
+                <ellipse cx="115" cy="132" rx="30" ry="55" transform="rotate(30 115 132)" fill="#6B4A0A" opacity="0.5" />
+                <circle cx="200" cy="62" r="14" fill="#6B4A0A" opacity="0.5" />
+              </svg>
+
+              {/* Marco */}
+              <div className="absolute inset-6 border border-[rgba(184,134,11,0.22)]" aria-hidden="true" />
+              {/* Esquinas doradas */}
+              {[
+                { top: 12, left: 12,   corners: ["t","l"] },
+                { top: 12, right: 12,  corners: ["t","r"] },
+                { bottom: 12, left: 12, corners: ["b","l"] },
+                { bottom: 12, right: 12,corners: ["b","r"] },
+              ].map((pos, i) => {
+                const style: React.CSSProperties = {
+                  position: "absolute",
+                  width: 14,
+                  height: 14,
+                  borderColor: "var(--color-gold-2)",
+                  borderStyle: "solid",
+                  borderTopWidth: pos.corners.includes("t") ? 1 : 0,
+                  borderBottomWidth: pos.corners.includes("b") ? 1 : 0,
+                  borderLeftWidth: pos.corners.includes("l") ? 1 : 0,
+                  borderRightWidth: pos.corners.includes("r") ? 1 : 0,
+                  top: pos.top,
+                  left: pos.left,
+                  right: pos.right,
+                  bottom: pos.bottom,
+                };
+                return <span key={i} aria-hidden="true" style={style} />;
+              })}
+
+              {/* Overlay tipográfico */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="font-serif text-[clamp(4rem,8vw,7rem)] leading-none text-[color:var(--color-ink-2)] opacity-[0.11]">Arte</span>
+                <span className="font-serif italic text-[clamp(4rem,8vw,7rem)] leading-none text-[color:var(--color-gold-3)] opacity-[0.18]">floral</span>
+              </div>
+
+              {/* Cita */}
+              <figure className="absolute bottom-10 inset-x-10 text-center">
+                <div className="mx-auto w-8 h-px bg-[color:var(--color-gold)] mb-3" />
+                <blockquote className="font-serif italic text-lg text-[color:var(--color-ink-3)] opacity-80 leading-snug">
+                  &ldquo;Cada flor cuenta una historia&rdquo;
+                </blockquote>
+                <figcaption className="mt-2 text-[0.62rem] tracking-[0.3em] uppercase text-[color:var(--color-gold-3)] opacity-70">
+                  Tere · Floristería Natura
+                </figcaption>
+              </figure>
             </div>
-          ))}
+          </div>
+
+          {/* Right — texto */}
+          <div
+            ref={right.ref}
+            className={`n-reveal ${right.visible ? "is-visible" : ""} lg:col-span-7 flex flex-col gap-8`}
+          >
+            <span className="n-eyebrow">Sobre nosotros</span>
+
+            <h2 className="n-h1 max-w-xl">
+              Arte floral con alma,<br />
+              <em className="text-[color:var(--color-gold)]">desde Reinosa</em>
+            </h2>
+
+            <p className="n-lead max-w-lg">
+              Tere lleva más de quince años convirtiendo flores en emociones.
+              Lo que empezó como vocación se ha convertido en el referente
+              floral de Cantabria — cada ramo lleva su firma: hecho a mano,
+              pensado para ti, con las flores más frescas de temporada.
+            </p>
+
+            <ul className="grid gap-3 max-w-lg">
+              {[
+                ["Frescura garantizada", "Flores de temporada, renovadas cada día."],
+                ["Arreglos a medida",     "Cada composición es única, pensada para ti."],
+                ["Entrega a domicilio",   "En Reinosa y comarcas, con el mismo mimo."],
+                ["Pasión floral",         "Quince años dedicados al detalle."],
+              ].map(([label, desc]) => (
+                <li key={label} className="flex items-start gap-3 text-sm">
+                  <BotanicalMark size={14} color="var(--color-gold)" className="mt-1 flex-none" />
+                  <span>
+                    <span className="text-[color:var(--color-ink-2)] font-medium">{label}</span>
+                    <span className="text-[color:var(--color-ink-4)]"> — {desc}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-2">
+              <a
+                href="#contacto"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("contacto")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="n-btn n-btn-primary"
+              >
+                Hablar con Tere
+                <ArrowRight size={14} />
+              </a>
+            </div>
+          </div>
         </div>
 
-        {/* Stats animados */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px mt-16" style={{ background: 'rgba(184,134,11,0.12)' }}>
-          {STATS.map(s => (
+        {/* Stats — franja limpia */}
+        <div className="mt-24 grid grid-cols-2 md:grid-cols-4 border-y border-[color:var(--rule-soft)]">
+          {STATS.map((s, i) => (
             <div
               key={s.label}
               className="flex flex-col items-center text-center py-10 px-6"
-              style={{ background: '#F5EDD8' }}
+              style={{
+                borderRight: i < STATS.length - 1 ? "1px solid var(--rule-soft)" : "none",
+              }}
             >
-              <div
-                className="text-4xl md:text-5xl font-light mb-2"
-                style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif', fontWeight: 300 }}
-              >
+              <span className="font-serif text-[clamp(2rem,4vw,3rem)] font-light text-[color:var(--color-gold)] leading-none">
                 <CountUp to={s.value} suffix={s.suffix} />
-              </div>
-              <div
-                className="text-xs tracking-[0.2em] uppercase"
-                style={{ color: '#8A7560', fontFamily: 'Jost, sans-serif' }}
-              >
+              </span>
+              <span className="mt-3 text-[0.62rem] tracking-[0.22em] uppercase text-[color:var(--color-ink-4)]">
                 {s.label}
-              </div>
+              </span>
             </div>
           ))}
         </div>
-
-        {/* Cita */}
-        <div
-          ref={cita.ref}
-          className="flex flex-col items-center text-center mt-20 px-6"
-          style={{
-            opacity: cita.visible ? 1 : 0,
-            transform: cita.visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.8s ease, transform 0.8s ease',
-          }}
-        >
-          <div className="w-12 h-px mb-8" style={{ background: 'rgba(184,134,11,0.3)' }} />
-          <blockquote
-            className="text-xl md:text-2xl font-light italic max-w-2xl leading-relaxed"
-            style={{ color: '#4A3C28', fontFamily: 'Jost, sans-serif' }}
-          >
-            &ldquo;Una flor no piensa en competir con la flor de al lado. Simplemente florece.&rdquo;
-          </blockquote>
-          <p className="mt-4 text-xs tracking-widest uppercase" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>— Zen Shin</p>
-        </div>
-
       </div>
     </section>
   );

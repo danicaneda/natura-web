@@ -4,8 +4,9 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { SITE } from '@/app/lib/site';
 
-const POSITION: [number, number] = [43.00417, -4.13972];
+const POSITION: [number, number] = [SITE.geo.latitude, SITE.geo.longitude];
 
 const customIcon = L.divIcon({
   className: '',
@@ -48,9 +49,9 @@ export default function MapaReinosa() {
       <Marker position={POSITION} icon={customIcon}>
         <Popup>
           <div style={{ fontFamily: 'Jost, sans-serif', fontSize: '0.85rem', lineHeight: '1.6' }}>
-            <strong style={{ color: '#B8860B', display: 'block', marginBottom: '2px' }}>🌿 Natura</strong>
-            C. Peligros, 2<br />
-            39200 Reinosa, Cantabria
+            <strong style={{ color: '#B8860B', display: 'block', marginBottom: '2px' }}>Natura</strong>
+            {SITE.address.street}<br />
+            {SITE.address.postalCode} {SITE.address.city}, {SITE.address.region}
           </div>
         </Popup>
       </Marker>

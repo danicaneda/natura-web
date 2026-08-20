@@ -7,12 +7,13 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const categoria = searchParams.get('categoria');
-    const destacado = searchParams.get('destacado');
 
+    const forwardParams = ['categoria', 'destacado', 'q', 'limit', 'offset', 'etiqueta'];
     let url = `${BACKEND}/api/productos?disponible=true`;
-    if (categoria) url += `&categoria=${encodeURIComponent(categoria)}`;
-    if (destacado) url += `&destacado=${encodeURIComponent(destacado)}`;
+    for (const key of forwardParams) {
+      const val = searchParams.get(key);
+      if (val !== null) url += `&${key}=${encodeURIComponent(val)}`;
+    }
 
     const res = await fetch(url, {
       cache: 'no-store',

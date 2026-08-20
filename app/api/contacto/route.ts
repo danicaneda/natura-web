@@ -1,12 +1,31 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { escapeHtml } from '@/app/lib/utils';
 
 export const dynamic = 'force-dynamic';
+
+// Rate limiting: max 3 envíos por IP en ventana de 10 min
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX       = 3;
+const rateMap        = new Map<string, { count: number; reset: number }>();
+
+function isRateLimited(ip: string): boolean {
+  const now   = Date.now();
+  const entry = rateMap.get(ip);
+  if (!entry || now > entry.reset) {
+    rateMap.set(ip, { count: 1, reset: now + RATE_WINDOW_MS });
+    return false;
+  }
+  if (entry.count >= RATE_MAX) return true;
+  entry.count++;
+  return false;
+}
 
 interface ContactoBody {
   nombre: string;
   email: string;
   telefono?: string;
+  ocasion?: string;
   mensaje: string;
 }
 
@@ -14,11 +33,16 @@ function validate(body: ContactoBody): string | null {
   if (!body.nombre?.trim()) return 'Nombre obligatorio';
   if (!body.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return 'Email inválido';
   if (!body.mensaje?.trim() || body.mensaje.trim().length < 10) return 'Mensaje demasiado corto';
-  if (body.mensaje.length > 1000) return 'Mensaje demasiado largo';
+  if (body.mensaje.length > 500) return 'Mensaje demasiado largo';
   return null;
 }
 
 export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  if (isRateLimited(ip)) {
+    return NextResponse.json({ error: 'Demasiados envíos. Espera unos minutos o contáctanos por WhatsApp.' }, { status: 429 });
+  }
+
   let body: ContactoBody;
   try {
     body = await request.json();
@@ -47,6 +71,11 @@ export async function POST(request: Request) {
     auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
 
+  const safeNombre   = escapeHtml(body.nombre);
+  const safeEmail    = escapeHtml(body.email);
+  const safeTelefono = body.telefono ? escapeHtml(body.telefono) : null;
+  const safeMensaje  = escapeHtml(body.mensaje);
+
   const htmlBody = `
     <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; color: #1A1208;">
       <div style="background: #1A1208; padding: 28px 32px; text-align: center;">
@@ -56,12 +85,13 @@ export async function POST(request: Request) {
       <div style="padding: 32px; background: #FAF6EE; border: 1px solid rgba(184,134,11,0.15); border-top: none;">
         <h2 style="font-size: 18px; font-weight: 400; color: #B8860B; margin: 0 0 24px 0;">Nuevo mensaje de contacto</h2>
         <table style="width: 100%; border-collapse: collapse;">
-          <tr><td style="padding: 8px 0; color: #8A7560; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; width: 100px;">Nombre</td><td style="padding: 8px 0; font-size: 15px;">${body.nombre}</td></tr>
-          <tr><td style="padding: 8px 0; color: #8A7560; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Email</td><td style="padding: 8px 0; font-size: 15px;"><a href="mailto:${body.email}" style="color: #B8860B;">${body.email}</a></td></tr>
-          ${body.telefono ? `<tr><td style="padding: 8px 0; color: #8A7560; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Teléfono</td><td style="padding: 8px 0; font-size: 15px;"><a href="tel:${body.telefono}" style="color: #B8860B;">${body.telefono}</a></td></tr>` : ''}
+          <tr><td style="padding: 8px 0; color: #8A7560; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; width: 100px;">Nombre</td><td style="padding: 8px 0; font-size: 15px;">${safeNombre}</td></tr>
+          <tr><td style="padding: 8px 0; color: #8A7560; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Email</td><td style="padding: 8px 0; font-size: 15px;"><a href="mailto:${safeEmail}" style="color: #B8860B;">${safeEmail}</a></td></tr>
+          ${safeTelefono ? `<tr><td style="padding: 8px 0; color: #8A7560; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Teléfono</td><td style="padding: 8px 0; font-size: 15px;"><a href="tel:${safeTelefono}" style="color: #B8860B;">${safeTelefono}</a></td></tr>` : ''}
+          ${body.ocasion ? `<tr><td style="padding: 8px 0; color: #8A7560; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Ocasión</td><td style="padding: 8px 0; font-size: 15px; color: #B8860B; font-weight: 500;">${escapeHtml(body.ocasion)}</td></tr>` : ''}
         </table>
         <div style="margin-top: 20px; padding: 20px; background: #F5EDD8; border-left: 3px solid #B8860B;">
-          <p style="margin: 0; font-size: 14px; line-height: 1.7; white-space: pre-wrap;">${body.mensaje.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+          <p style="margin: 0; font-size: 14px; line-height: 1.7; white-space: pre-wrap;">${safeMensaje}</p>
         </div>
         <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(184,134,11,0.2); font-size: 12px; color: #B8A88A;">
           Recibido el ${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}

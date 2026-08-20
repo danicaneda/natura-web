@@ -1,263 +1,194 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { swr } from "@/app/lib/cache";
+import SectionHeader from "./ui/SectionHeader";
+import { ChevronLeft, ChevronRight, Google, Star } from "./ui/Icons";
+import { SITE } from "@/app/lib/site";
 
-const testimonios = [
-  {
-    nombre: 'Mariana Pasquel',
-    avatar: 'MP',
-    texto: 'El ramo que encargué quedó PRECIOSO. Me ha encantado tanto que casi me lo regalo a mí misma 🤣💐 Siempre atentas y muy profesionales. Pedí un ramo para regalo disimulando una botella de champán y quedó espectacular. Se nota muchísimo el cariño con el que hacen las cosas, y eso vale oro. Siempre aciertan con los encargos. Sin duda, mi floristería de confianza.',
-    nota: 5,
-    ocasion: 'Regalo especial',
-    via: 'Google',
-  },
-  {
-    nombre: 'Andrea Jimenez',
-    avatar: 'AJ',
-    texto: 'La mejor de las mejores en su sector, su equipo es maravilloso y la dirección de la empresa es inmejorable. Abarcan todos los servicios imaginables en floristería, y el nivel técnico y de estilo es impresionante. Siempre innovando y de la mano de las últimas tendencias. Los mejores y sobre todo con el mejor trato.',
-    nota: 5,
-    ocasion: 'Valoración general',
-    via: 'Google',
-  },
-  {
-    nombre: 'Nieves Chico',
-    avatar: 'NC',
-    texto: 'Un día espectacular gracias a Tere porque desde el principio entendió perfectamente nuestra idea. Recomiendo a todas las parejas que se pongan en manos de ella. Mil gracias.',
-    nota: 5,
-    ocasion: 'Boda',
-    via: 'Google',
-  },
-  {
-    nombre: 'Patricia Sáiz Ruiloba',
-    avatar: 'PS',
-    texto: 'Encantada 😍 Súper agradable trato con todas las facilidades del mundo... Llamé por tlf para encargar un ramo con envío y pude pagarlo por bizum. El ramo era enorme, precioso y muy original!!! Gracias chicas 😘',
-    nota: 5,
-    ocasion: 'Envío a domicilio',
-    via: 'Google',
-  },
-  {
-    nombre: 'Cristina C.',
-    avatar: 'CC',
-    texto: 'Nos casamos este verano y le encargamos el arco de flores para la ceremonia junto con los centros de mesa. El resultado espectacular y el trato muy cercano. Muy recomendable.',
-    nota: 5,
-    ocasion: 'Boda',
-    via: 'Google',
-  },
-  {
-    nombre: 'Alberto Fernández',
-    avatar: 'AF',
-    texto: 'Muy recomendable. Hice un pedido de un ramo por teléfono, y la atención no pudo ser mejor. Les mandé por WhatsApp una idea de lo que quería y Tere lo preparó y me mandó foto de cómo quedaba... y de precio muy bien.',
-    nota: 5,
-    ocasion: 'Pedido por teléfono',
-    via: 'Google',
-  },
-  {
-    nombre: 'Sally Maria Mallen',
-    avatar: 'SM',
-    texto: 'Trato excepcional. Nuestro encargo fue un centro de flores para un funeral. El trato cercano de Tere, su ayuda, su predisposición y sensibilidad a la hora de tratar con nosotros sin duda ha sido de 10.',
-    nota: 5,
-    ocasion: 'Funeral',
-    via: 'Google',
-  },
-  {
-    nombre: 'Joaquin Martinez',
-    avatar: 'JM',
-    texto: 'Si quieres alguien profesional en el mundo de las flores, plantas, el equipo de Tere en Natura son de lo mejor. Son famosos los ramos de novia que prepara y entrega Tere a las novias. Servicio y precio de maravilla.',
-    nota: 5,
-    ocasion: 'Ramo de novia',
-    via: 'Google',
-  },
-  {
-    nombre: 'Rita Callejo',
-    avatar: 'RC',
-    texto: '10/10. Tere es increíble, y hace unos ramos de muerte.',
-    nota: 5,
-    ocasion: 'Calidad',
-    via: 'Google',
-  },
-  {
-    nombre: 'David Sansom',
-    avatar: 'DS',
-    texto: 'Teresa es un espectáculo! El servicio fue rápido, bueno, personal, con mucho conocimiento, la verdad, me ha dejado súper contento! Muchas gracias Teresa.',
-    nota: 5,
-    ocasion: 'Atención personal',
-    via: 'Google',
-  },
-  {
-    nombre: 'Luis Martin',
-    avatar: 'LM',
-    texto: 'Tere una persona muy cariñosa y cercana, encargamos la decoración floral para nuestra boda y aportó grandes ideas. Muchas gracias por formar parte de un día inolvidable.',
-    nota: 5,
-    ocasion: 'Decoración boda',
-    via: 'Google',
-  },
-  {
-    nombre: 'Noelia Benito Martinez',
-    avatar: 'NB',
-    texto: 'Floristería con encanto y encantadoras sus floristas.',
-    nota: 5,
-    ocasion: 'Ambiente',
-    via: 'Google',
-  },
+interface Testimonio {
+  id?: number;
+  nombre: string;
+  texto: string;
+  nota: number;
+  ocasion?: string;
+}
+
+const FALLBACK: Testimonio[] = [
+  { nombre: "Mariana Pasquel",     texto: "El ramo que encargué quedó precioso. Siempre atentas y muy profesionales — se nota el cariño con el que hacen las cosas.", nota: 5, ocasion: "Regalo especial" },
+  { nombre: "Andrea Jimenez",      texto: "La mejor de las mejores en su sector. Nivel técnico y estilo impresionantes, siempre innovando y de la mano de las últimas tendencias.", nota: 5, ocasion: "Valoración general" },
+  { nombre: "Nieves Chico",        texto: "Un día espectacular gracias a Tere. Desde el principio entendió perfectamente nuestra idea. Recomiendo a todas las parejas que se pongan en sus manos.", nota: 5, ocasion: "Boda" },
+  { nombre: "Patricia Sáiz Ruiloba", texto: "Encantada. Trato muy agradable, todas las facilidades del mundo. El ramo era enorme, precioso y muy original.", nota: 5, ocasion: "Envío a domicilio" },
+  { nombre: "Cristina C.",         texto: "Nos casamos este verano y le encargamos el arco de flores para la ceremonia junto con los centros de mesa. El resultado espectacular y el trato muy cercano.", nota: 5, ocasion: "Boda" },
+  { nombre: "Alberto Fernández",   texto: "Muy recomendable. Les mandé por WhatsApp una idea de lo que quería y Tere lo preparó y me mandó foto de cómo quedaba. Precio muy bien.", nota: 5, ocasion: "Pedido por teléfono" },
+  { nombre: "Sally Maria Mallen",  texto: "Trato excepcional. El trato cercano de Tere, su ayuda, su predisposición y sensibilidad a la hora de tratar con nosotros ha sido de 10.", nota: 5, ocasion: "Funeral" },
+  { nombre: "Joaquin Martinez",    texto: "Si buscas profesionales en el mundo de las flores, el equipo de Tere son de lo mejor. Servicio y precio de maravilla.", nota: 5, ocasion: "Ramo de novia" },
+  { nombre: "Rita Callejo",        texto: "10/10. Tere es increíble, y hace unos ramos preciosos.", nota: 5, ocasion: "Calidad" },
+  { nombre: "David Sansom",        texto: "Servicio rápido, personal y con mucho conocimiento. Me ha dejado súper contento.", nota: 5, ocasion: "Atención personal" },
+  { nombre: "Luis Martín",         texto: "Tere una persona muy cariñosa y cercana. Encargamos la decoración floral para nuestra boda y aportó grandes ideas.", nota: 5, ocasion: "Decoración boda" },
+  { nombre: "Noelia Benito",       texto: "Floristería con encanto y encantadoras sus floristas.", nota: 5, ocasion: "Ambiente" },
 ];
 
-function Stars({ n }: { n: number }) {
+const VISIBLE_DESKTOP = 2;
+const AUTOPLAY_MS = 6500;
+
+function Card({ t }: { t: Testimonio }) {
   return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <svg key={i} width="12" height="12" viewBox="0 0 12 12" fill={i < n ? '#D4A017' : 'rgba(184,134,11,0.2)'}>
-          <path d="M6 1l1.4 2.8 3.1.5-2.2 2.1.5 3.1L6 8.1l-2.8 1.4.5-3.1L1.5 4.3l3.1-.5z"/>
-        </svg>
-      ))}
-    </div>
-  );
-}
-
-const GOOGLE_REVIEWS_URL = 'https://www.google.com/search?q=Natura+flores+y+plantas+Reinosa+rese%C3%B1as&tbm=lcl';
-
-function GoogleLogo() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-    </svg>
-  );
-}
-
-function TestimonioCard({ t }: { t: typeof testimonios[0] }) {
-  return (
-    <div
-      className="flex-shrink-0 flex flex-col gap-4 p-7 mx-3"
-      style={{
-        width: '320px',
-        background: '#FFFFFF',
-        border: '1px solid rgba(184,134,11,0.1)',
-        boxShadow: '0 2px 16px rgba(26,18,8,0.04)',
-      }}
-    >
-      {/* Header: avatar + nombre + Google badge */}
-      <div className="flex items-center gap-3">
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-medium shrink-0"
-          style={{ background: 'linear-gradient(135deg, #B8860B, #D4A017)', color: '#FAF6EE', fontFamily: 'Jost, sans-serif', letterSpacing: '0.05em' }}
-        >
-          {t.avatar}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate" style={{ color: '#1A1208', fontFamily: 'Jost, sans-serif' }}>{t.nombre}</p>
-          <p className="text-xs mt-0.5 tracking-widest uppercase" style={{ color: 'rgba(184,134,11,0.5)', fontFamily: 'Jost, sans-serif' }}>{t.ocasion}</p>
-        </div>
-        <div className="flex items-center gap-1 shrink-0 px-2 py-1" style={{ border: '1px solid rgba(0,0,0,0.07)', borderRadius: '4px' }}>
-          <GoogleLogo />
-          <span className="text-xs" style={{ color: '#5F6368', fontFamily: 'Jost, sans-serif' }}>Google</span>
-        </div>
-      </div>
-
-      {/* Stars */}
-      <Stars n={t.nota} />
-
-      {/* Texto */}
-      <p
-        className="text-sm leading-relaxed flex-1"
-        style={{ color: '#4A3C28', fontFamily: 'Jost, sans-serif', fontStyle: 'italic' }}
+    <article className="relative bg-[color:var(--color-cream)] border border-[color:var(--rule-soft)] p-8 md:p-10 flex flex-col h-full">
+      <span
+        aria-hidden="true"
+        className="absolute top-4 left-6 font-serif text-[7rem] leading-none text-[color:var(--color-gold)] opacity-[0.08] pointer-events-none select-none"
       >
-        &ldquo;{t.texto}&rdquo;
-      </p>
-    </div>
+        &ldquo;
+      </span>
+      <div className="flex gap-1 mb-4 text-[color:var(--color-gold-2)]">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star key={i} size={12} filled={i < t.nota} />
+        ))}
+      </div>
+      <blockquote className="font-serif italic text-lg md:text-xl leading-[1.5] text-[color:var(--color-ink-2)] flex-1">
+        {t.texto}
+      </blockquote>
+      <div className="mt-8 pt-6 border-t border-[color:var(--rule-soft)] flex items-center justify-between gap-3">
+        <div className="flex flex-col">
+          <span className="text-sm text-[color:var(--color-ink-2)] font-medium">{t.nombre}</span>
+          {t.ocasion && (
+            <span className="text-[0.6rem] tracking-[0.18em] uppercase text-[color:var(--color-gold-3)] mt-0.5">
+              {t.ocasion}
+            </span>
+          )}
+        </div>
+        <span className="inline-flex items-center gap-1.5 text-[0.65rem] text-[color:var(--color-ink-5)]">
+          <Google size={12} />
+          Google
+        </span>
+      </div>
+    </article>
   );
 }
 
 export default function TestimoniosSection() {
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const doubled = [...testimonios, ...testimonios];
+  const [testimonios, setTestimonios] = useState<Testimonio[]>(FALLBACK);
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const total = testimonios.length;
 
   useEffect(() => {
-    const el = headerRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setHeaderVisible(true); obs.disconnect(); } }, { threshold: 0.2 });
-    obs.observe(el);
-    return () => obs.disconnect();
+    swr<Testimonio[]>(
+      "natura_testimonios",
+      () => fetch("/api/testimonios").then((r) => r.json()),
+      (d) => { if (Array.isArray(d) && d.length > 0) setTestimonios(d); },
+      5 * 60 * 1000
+    );
   }, []);
 
+  const next = useCallback(() => setCurrent((c) => (c + 1) % total), [total]);
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + total) % total), [total]);
+
+  useEffect(() => {
+    if (paused) return;
+    timerRef.current = setTimeout(next, AUTOPLAY_MS);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [current, paused, next]);
+
+  const visibleIdx = Array.from({ length: VISIBLE_DESKTOP }, (_, i) => (current + i) % total);
+
   return (
-    <section
-      id="testimonios"
-      style={{ background: '#F5EDD8', width: '100%', display: 'block', overflow: 'hidden' }}
-    >
-      <div className="w-full max-w-6xl mx-auto px-6 pt-28 pb-16">
+    <section id="testimonios" className="bg-[color:var(--color-cream-2)]">
+      <div className="n-container n-section-y">
+        <SectionHeader
+          eyebrow="Testimonios"
+          title={<>Lo que dicen <em className="text-[color:var(--color-gold)]">nuestros clientes</em></>}
+        />
+
+        {/* Trust strip */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="flex text-[color:var(--color-gold-2)] gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={14} />)}
+            </span>
+            <span className="text-[color:var(--color-ink-2)] font-medium">{SITE.google.rating.toFixed(1)}</span>
+          </div>
+          <span className="w-px h-4 bg-[color:var(--rule)]" aria-hidden="true" />
+          <a
+            href={SITE.google.reviewsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 n-link text-[0.85rem]"
+          >
+            <Google size={13} />
+            {SITE.google.reviewCount} reseñas verificadas
+          </a>
+        </div>
+
         <div
-          ref={headerRef}
-          className="flex flex-col items-center text-center mb-16"
-          style={{
-            opacity: headerVisible ? 1 : 0,
-            transform: headerVisible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.7s ease, transform 0.7s ease',
-          }}
+          className="mt-12"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)}
+          onBlur={() => setPaused(false)}
         >
-          <p className="text-xs tracking-[0.3em] uppercase mb-4" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>
-            Reseñas
-          </p>
-          <h2 className="text-5xl md:text-6xl font-light mb-6" style={{ color: '#1A1208', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-            Lo que dicen <em>nuestros clientes</em>
-          </h2>
-          <div className="w-12 h-px mb-6" style={{ background: '#B8860B' }} />
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex">
-                {[1,2,3,4,5].map(i => (
-                  <svg key={i} width="18" height="18" viewBox="0 0 12 12" fill="#D4A017">
-                    <path d="M6 1l1.4 2.8 3.1.5-2.2 2.1.5 3.1L6 8.1l-2.8 1.4.5-3.1L1.5 4.3l3.1-.5z"/>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-sm" style={{ color: '#8A7560', fontFamily: 'Jost, sans-serif' }}>
-                5.0 · Reseñas verificadas en Google
-              </p>
-            </div>
-            <div className="flex items-center gap-4 flex-wrap justify-center">
-              <a
-                href={GOOGLE_REVIEWS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-xs tracking-[0.15em] uppercase pb-0.5 transition-opacity hover:opacity-60"
-                style={{ color: '#B8860B', borderBottom: '1px solid rgba(184,134,11,0.4)', fontFamily: 'Jost, sans-serif' }}
-              >
-                <GoogleLogo />
-                Ver todas en Google
-              </a>
-              <a
-                href="https://search.google.com/local/writereview?placeid=ChIJYfockF9oOQ0R2xi0-RQ0lrs"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-2 text-xs tracking-[0.15em] uppercase transition-all hover:opacity-85 active:scale-95"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            {visibleIdx.map((idx, pos) => (
+              <div
+                key={`${idx}-${current}`}
                 style={{
-                  border: '1px solid rgba(184,134,11,0.3)',
-                  color: '#B8860B',
-                  fontFamily: 'Jost, sans-serif',
+                  animation: "n-lineReveal 0.6s var(--ease-out) both",
+                  animationDelay: `${pos * 80}ms`,
                 }}
               >
-                ✦ Dejar tu reseña
-              </a>
-            </div>
+                <Card t={testimonios[idx]} />
+              </div>
+            ))}
           </div>
-        </div>
-      </div>
 
-      {/* Marquee — full width, fuera del max-w container */}
-      <div
-        className="w-full overflow-hidden pb-28"
-        style={{
-          maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
-        }}
-      >
-        <div className="marquee-track">
-          {doubled.map((t, i) => (
-            <TestimonioCard key={i} t={t} />
-          ))}
+          <div className="mt-10 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={prev}
+                aria-label="Testimonio anterior"
+                className="w-10 h-10 flex items-center justify-center border border-[color:var(--rule)] text-[color:var(--color-gold-3)] hover:bg-[rgba(184,134,11,0.06)] transition-colors"
+              >
+                <ChevronLeft size={14} />
+              </button>
+              <button
+                onClick={next}
+                aria-label="Testimonio siguiente"
+                className="w-10 h-10 flex items-center justify-center border border-[color:var(--rule)] text-[color:var(--color-gold-3)] hover:bg-[rgba(184,134,11,0.06)] transition-colors"
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+
+            <div className="flex gap-1.5 items-center">
+              {testimonios.slice(0, Math.min(total, 12)).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrent(i)}
+                  aria-label={`Ir a testimonio ${i + 1}`}
+                  className="p-2"
+                >
+                  <span
+                    className="block transition-all duration-300"
+                    style={{
+                      width: current === i ? 20 : 6,
+                      height: 4,
+                      background: current === i ? "var(--color-gold)" : "var(--rule)",
+                      borderRadius: 999,
+                    }}
+                  />
+                </button>
+              ))}
+              {total > 12 && (
+                <span className="text-[0.68rem] text-[color:var(--color-ink-5)] ml-2">+{total - 12}</span>
+              )}
+            </div>
+
+            <span className="text-[0.7rem] tabular-nums text-[color:var(--color-ink-5)] tracking-[0.14em]">
+              {String(current + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+            </span>
+          </div>
         </div>
       </div>
     </section>

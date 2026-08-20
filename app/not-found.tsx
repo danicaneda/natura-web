@@ -1,165 +1,62 @@
-'use client';
+import Link from "next/link";
+import BotanicalMark from "./components/ui/BotanicalMark";
+import { SITE } from "./lib/site";
 
-import { useEffect, useState } from 'react';
+export const metadata = {
+  title: "Página no encontrada",
+};
 
 export default function NotFound() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 80);
-    return () => clearTimeout(t);
-  }, []);
-
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#FAF6EE',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-        opacity: visible ? 1 : 0,
-        transition: 'opacity 0.6s ease',
-      }}
-    >
-      {/* Logo */}
-      <div style={{ marginBottom: '40px', textAlign: 'center' }}>
-        <div
-          style={{
-            width: '64px',
-            height: '64px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #B8860B, #8B6508)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.8rem',
-            margin: '0 auto 16px auto',
-          }}
-        >
-          🌿
-        </div>
-        <p
-          style={{
-            fontFamily: 'Cormorant Garamond, Georgia, serif',
-            fontSize: '1.1rem',
-            letterSpacing: '4px',
-            color: '#B8860B',
-            textTransform: 'uppercase',
-            margin: 0,
-          }}
-        >
-          NATURA
+    <main className="min-h-screen bg-[color:var(--color-cream)] relative overflow-hidden flex items-center justify-center px-6 py-24">
+      {/* Botánico decorativo */}
+      <svg
+        viewBox="0 0 500 600"
+        fill="none"
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full opacity-[0.04] pointer-events-none"
+      >
+        <path d="M250 580 Q245 420 250 60" stroke="#B8860B" strokeWidth="5" strokeLinecap="round" />
+        <ellipse cx="250" cy="340" rx="80" ry="145" transform="rotate(20 250 340)" fill="#B8860B" opacity="0.9" />
+        <ellipse cx="250" cy="255" rx="65" ry="115" transform="rotate(-18 250 255)" fill="#B8860B" opacity="0.85" />
+        <ellipse cx="250" cy="175" rx="45" ry="88" transform="rotate(8 250 175)" fill="#B8860B" opacity="0.7" />
+        <circle cx="250" cy="62" r="20" fill="#B8860B" opacity="0.4" />
+      </svg>
+
+      <div className="relative z-10 flex flex-col items-center text-center gap-6 max-w-md">
+        <Link href="/" aria-label="Volver al inicio" className="inline-flex flex-col items-center gap-3">
+          <BotanicalMark size={40} color="var(--color-gold)" />
+          <span className="font-serif tracking-[0.38em] uppercase text-[color:var(--color-gold-3)]">
+            NATURA
+          </span>
+        </Link>
+
+        <span className="n-eyebrow">Error 404</span>
+
+        <h1 className="font-serif text-4xl md:text-5xl leading-[1.05] text-[color:var(--color-ink-2)]">
+          Esta flor no existe<br />
+          <em className="text-[color:var(--color-gold)]">en nuestro jardín</em>
+        </h1>
+
+        <p className="n-body max-w-xs">
+          La página que buscas no existe o ha cambiado de lugar.
+          Descubre nuestra colección o habla con nosotros.
         </p>
-      </div>
 
-      {/* 404 */}
-      <p
-        style={{
-          fontFamily: 'Jost, sans-serif',
-          fontSize: '0.7rem',
-          letterSpacing: '0.3em',
-          textTransform: 'uppercase',
-          color: '#B8860B',
-          margin: '0 0 16px 0',
-        }}
-      >
-        Error 404
-      </p>
-      <h1
-        style={{
-          fontFamily: 'Cormorant Garamond, Georgia, serif',
-          fontSize: 'clamp(3rem, 8vw, 5rem)',
-          fontWeight: 300,
-          color: '#1A1208',
-          margin: '0 0 8px 0',
-          lineHeight: 1.1,
-          textAlign: 'center',
-        }}
-      >
-        Página no encontrada
-      </h1>
-
-      <div style={{ width: '48px', height: '1px', background: '#B8860B', margin: '20px auto' }} />
-
-      <p
-        style={{
-          fontFamily: 'Jost, sans-serif',
-          fontSize: '0.95rem',
-          color: '#8A7560',
-          textAlign: 'center',
-          maxWidth: '380px',
-          lineHeight: 1.7,
-          margin: '0 0 40px 0',
-        }}
-      >
-        Parece que esta flor no existe en nuestro jardín.
-        Vuelve al inicio y descubre nuestra colección.
-      </p>
-
-      <a
-        href="/"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '14px 32px',
-          background: '#B8860B',
-          color: '#FAF6EE',
-          fontFamily: 'Jost, sans-serif',
-          fontSize: '0.75rem',
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          textDecoration: 'none',
-          transition: 'opacity 0.2s',
-        }}
-        onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '0.85'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '1'; }}
-      >
-        Volver al inicio
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </a>
-
-      {/* Links secundarios */}
-      <div
-        style={{
-          marginTop: '32px',
-          display: 'flex',
-          gap: '24px',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-        }}
-      >
-        {[
-          { label: 'Productos', href: '/#productos' },
-          { label: 'Galería', href: '/#galeria' },
-          { label: 'Contacto', href: '/#contacto' },
-        ].map(link => (
+        <div className="flex flex-col sm:flex-row gap-3 mt-2 w-full max-w-xs">
+          <Link href="/" className="n-btn n-btn-primary flex-1">
+            Volver al inicio
+          </Link>
           <a
-            key={link.href}
-            href={link.href}
-            style={{
-              fontFamily: 'Jost, sans-serif',
-              fontSize: '0.75rem',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              color: '#B8860B',
-              textDecoration: 'none',
-              borderBottom: '1px solid rgba(184,134,11,0.3)',
-              paddingBottom: '2px',
-              transition: 'opacity 0.2s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '0.6'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '1'; }}
+            href={SITE.whatsapp.url("Hola, necesito ayuda.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="n-btn n-btn-whatsapp flex-1"
           >
-            {link.label}
+            WhatsApp
           </a>
-        ))}
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

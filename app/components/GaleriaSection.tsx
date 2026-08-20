@@ -1,390 +1,183 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { proxyImageUrl } from "@/app/lib/utils";
+import { swr } from "@/app/lib/cache";
+import SectionHeader from "./ui/SectionHeader";
+import BotanicalMark from "./ui/BotanicalMark";
+import { Close, ChevronLeft, ChevronRight } from "./ui/Icons";
 
-interface GalleryImage {
-  id: number;
-  titulo?: string;
-  imagen_url: string;
-  categoria?: string;
+interface Img { id: number; titulo?: string; imagen_url: string; categoria?: string; }
+
+function BotanicalFallback() {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center bg-[color:var(--color-cream-2)]">
+      <BotanicalMark size={28} color="var(--color-gold)" className="opacity-25" />
+    </div>
+  );
 }
 
-function proxyImageUrl(url: string): string {
-  try {
-    const parsed = new URL(url);
-    if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') return url;
-    return `/api/media${parsed.pathname}`;
-  } catch {
-    if (url.startsWith('/media/')) return `/api/media${url.slice(6)}`;
-  }
-  return url;
+function Gimg({ src, alt, priority, sizes }: { src: string; alt: string; priority?: boolean; sizes: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return <BotanicalFallback />;
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      sizes={sizes}
+      priority={priority}
+      className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
+      onError={() => setFailed(true)}
+    />
+  );
 }
 
 export default function GaleriaSection() {
-  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [images, setImages] = useState<Img[]>([]);
   const [loading, setLoading] = useState(true);
-  const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState<number | null>(null);
-  const [verTodas, setVerTodas] = useState(false);
-  const [paused, setPaused] = useState(false);
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const lbTouchStartX = useRef<number | null>(null);
 
   useEffect(() => {
-    fetch('/api/gallery')
-      .then(r => r.json())
-      .then(d => setImages(Array.isArray(d) ? d : []))
-      .catch(() => setImages([]))
-      .finally(() => setLoading(false));
+    swr<Img[]>(
+      "natura_gallery",
+      () => fetch("/api/gallery").then((r) => r.json()),
+      (d) => { if (Array.isArray(d)) { setImages(d); setLoading(false); } },
+      5 * 60 * 1000
+    ).then((c) => { if (Array.isArray(c)) { setImages(c); setLoading(false); } });
   }, []);
 
-  useEffect(() => {
-    const el = headerRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setHeaderVisible(true); obs.disconnect(); } }, { threshold: 0.2 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  const closeLB = useCallback(() => setLightbox(null), []);
+  const nextLB = useCallback(() => setLightbox((i) => (i === null ? null : (i + 1) % images.length)), [images.length]);
+  const prevLB = useCallback(() => setLightbox((i) => (i === null ? null : (i - 1 + images.length) % images.length)), [images.length]);
 
-  const VISIBLE = 4;
-
-  const next = useCallback(() => {
-    setCurrent(c => (c + 1) % Math.max(1, images.length));
-  }, [images.length]);
-
-  const prev = useCallback(() => {
-    setCurrent(c => (c - 1 + images.length) % Math.max(1, images.length));
-  }, [images.length]);
-
-  // Autoplay
-  useEffect(() => {
-    if (paused || images.length <= VISIBLE) return;
-    timerRef.current = setTimeout(next, 3800);
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, [current, paused, next, images.length]);
-
-  // Teclado en lightbox
   useEffect(() => {
     if (lightbox === null) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') setLightbox(i => i !== null ? (i + 1) % images.length : null);
-      if (e.key === 'ArrowLeft') setLightbox(i => i !== null ? (i - 1 + images.length) % images.length : null);
-      if (e.key === 'Escape') setLightbox(null);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLB();
+      if (e.key === "ArrowRight") nextLB();
+      if (e.key === "ArrowLeft") prevLB();
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [lightbox, images.length]);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightbox, closeLB, nextLB, prevLB]);
 
-  // Block body scroll when modals open
   useEffect(() => {
-    if (lightbox !== null || verTodas) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [lightbox, verTodas]);
+    const active = lightbox !== null || showAll;
+    document.body.style.overflow = active ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [lightbox, showAll]);
 
-  // Touch handlers for carousel
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null || touchStartY.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    const dy = e.changedTouches[0].clientY - touchStartY.current;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      dx < 0 ? next() : prev();
-    }
-    touchStartX.current = null;
-    touchStartY.current = null;
-  };
-
-  // Touch handlers for lightbox
-  const lbTouchStartX = useRef<number | null>(null);
-  const onLbTouchStart = (e: React.TouchEvent) => { lbTouchStartX.current = e.touches[0].clientX; };
-  const onLbTouchEnd = (e: React.TouchEvent) => {
-    if (lbTouchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - lbTouchStartX.current;
-    if (Math.abs(dx) > 50) {
-      dx < 0
-        ? setLightbox(i => i !== null ? (i + 1) % images.length : null)
-        : setLightbox(i => i !== null ? (i - 1 + images.length) % images.length : null);
-    }
-    lbTouchStartX.current = null;
-  };
-
-  // Slides visibles (circular)
-  const visibleImages = images.length === 0 ? [] : Array.from({ length: Math.min(VISIBLE, images.length) }, (_, i) =>
-    images[(current + i) % images.length]
-  );
-
-  // Aspect ratios for varied grid feel
-  const aspectRatios = ['3/4', '1/1', '1/1', '4/5'];
+  // Masonry-ish grid — first big, rest smaller
+  const display = images.slice(0, 8);
 
   return (
-    <section id="galeria" style={{ background: '#FAF6EE', width: '100%', display: 'block' }}>
-      <div className="w-full max-w-6xl mx-auto px-6 py-28">
+    <section id="galeria" className="bg-[color:var(--color-cream-2)]">
+      <div className="n-container n-section-y">
+        <SectionHeader
+          eyebrow="Galería"
+          title={<>Nuestra <em className="text-[color:var(--color-gold)]">inspiración</em></>}
+          subtitle="Cada imagen cuenta una historia de belleza natural."
+        />
 
-        {/* Header */}
-        <div
-          ref={headerRef}
-          className="flex flex-col items-center text-center mb-16"
-          style={{
-            opacity: headerVisible ? 1 : 0,
-            transform: headerVisible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.7s ease, transform 0.7s ease',
-          }}
-        >
-          <p className="text-xs tracking-[0.3em] uppercase mb-4" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>
-            Galería
-          </p>
-          <h2 className="text-5xl md:text-6xl font-light mb-6" style={{ color: '#1A1208', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-            Nuestra <em>inspiración</em>
-          </h2>
-          <div className="w-12 h-px mb-6" style={{ background: '#B8860B' }} />
-          <p className="text-base max-w-xl" style={{ color: '#8A7560', fontFamily: 'Jost, sans-serif' }}>
-            Cada imagen cuenta una historia de belleza natural.
-          </p>
-        </div>
-
-        {/* Contenido */}
-        {loading ? (
-          <div className="grid grid-cols-12 gap-3" style={{ height: '520px' }}>
-            <div className="col-span-12 md:col-span-7 skeleton-shimmer" />
-            <div className="col-span-12 md:col-span-5 grid grid-rows-2 gap-3">
-              <div className="skeleton-shimmer" />
-              <div className="skeleton-shimmer" />
+        <div className="mt-14">
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="n-skeleton" style={{ height: i === 0 ? "440px" : "220px", gridColumn: i === 0 ? "span 2" : undefined }} />
+              ))}
             </div>
-          </div>
-        ) : images.length === 0 ? (
-          <div className="flex flex-col items-center py-24 gap-4">
-            <div className="w-12 h-px" style={{ background: 'rgba(184,134,11,0.3)' }} />
-            <p className="text-sm tracking-widest uppercase" style={{ color: '#8A7560', fontFamily: 'Jost, sans-serif' }}>
-              Próximamente nuestra galería
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* Bento grid — touch/swipe on mobile */}
-            <div
-              ref={carouselRef}
-              onTouchStart={onTouchStart}
-              onTouchEnd={onTouchEnd}
-              className="flex flex-col gap-3"
-            >
-              {/* Row 1: featured large + 2 stacked */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-                {/* Featured — 7 cols */}
-                {images[current] && (
-                  <div
-                    className="md:col-span-7 overflow-hidden cursor-pointer group relative"
-                    style={{ height: '420px', background: '#EDE0C4' }}
-                    onClick={() => setLightbox(current)}
-                    onMouseEnter={() => setPaused(true)}
-                    onMouseLeave={() => setPaused(false)}
-                  >
-                    <img
-                      src={proxyImageUrl(images[current].imagen_url)}
-                      alt={images[current].titulo || 'Natura'}
-                      className="w-full h-full object-cover transition-transform duration-[900ms] group-hover:scale-[1.04]"
-                      loading="lazy"
-                    />
-                    <div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6"
-                      style={{ background: 'linear-gradient(to top, rgba(26,18,8,0.75), transparent)' }}
+          ) : images.length === 0 ? (
+            <div className="flex flex-col items-center py-24 gap-4">
+              <BotanicalMark size={32} color="var(--color-gold)" className="opacity-25" />
+              <p className="text-sm tracking-[0.2em] uppercase text-[color:var(--color-ink-4)]">
+                Próximamente nuestra galería
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {display.map((img, i) => {
+                  const isHero = i === 0;
+                  return (
+                    <button
+                      key={img.id}
+                      onClick={() => setLightbox(i)}
+                      className={`group relative overflow-hidden bg-[color:var(--color-cream-3)] ${isHero ? "col-span-2 row-span-2 aspect-[4/5] md:aspect-[6/7]" : "aspect-square"}`}
+                      aria-label={img.titulo || `Imagen ${i + 1}`}
                     >
-                      <div className="flex items-center justify-between w-full">
-                        {images[current].titulo && (
-                          <p className="text-sm font-light" style={{ color: '#FAF6EE', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: '1.1rem' }}>
-                            {images[current].titulo}
-                          </p>
-                        )}
-                        <span className="flex items-center gap-1.5 text-xs tracking-widest uppercase ml-auto" style={{ color: 'rgba(212,160,23,0.8)', fontFamily: 'Jost, sans-serif' }}>
-                          Ver
-                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 9L9 1M9 1H3M9 1v6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <Gimg
+                        src={proxyImageUrl(img.imagen_url) ?? ""}
+                        alt={img.titulo || "Composición floral de Natura"}
+                        priority={isHero}
+                        sizes={isHero ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 50vw, 33vw"}
+                      />
+                      {img.titulo && (
+                        <span className="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(to top, rgba(15,10,5,0.75), transparent)" }}>
+                          <span className="text-sm text-[color:var(--color-cream)] font-serif">{img.titulo}</span>
                         </span>
-                      </div>
-                    </div>
-                    {/* Numero de imagen */}
-                    <div className="absolute top-4 left-4">
-                      <span className="px-2.5 py-1 text-xs tracking-widest" style={{ background: 'rgba(26,18,8,0.6)', color: 'rgba(245,230,192,0.7)', fontFamily: 'Jost, sans-serif' }}>
-                        {current + 1} / {images.length}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* 2 stacked — 5 cols */}
-                <div className="md:col-span-5 grid grid-rows-2 gap-3">
-                  {[1, 2].map(offset => {
-                    const img = images[(current + offset) % images.length];
-                    if (!img) return <div key={offset} style={{ background: '#EDE0C4' }} />;
-                    return (
-                      <div
-                        key={`${img.id}-${offset}`}
-                        className="overflow-hidden cursor-pointer group relative"
-                        style={{ height: '203px', background: '#EDE0C4' }}
-                        onClick={() => setLightbox(images.indexOf(img))}
-                      >
-                        <img
-                          src={proxyImageUrl(img.imagen_url)}
-                          alt={img.titulo || 'Natura'}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          loading="lazy"
-                        />
-                        <div
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
-                          style={{ background: 'linear-gradient(to top, rgba(26,18,8,0.65), transparent)' }}
-                        >
-                          {img.titulo && (
-                            <p className="text-xs" style={{ color: '#F5E6C0', fontFamily: 'Jost, sans-serif' }}>{img.titulo}</p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Row 2: 3 equal-width images (if ≥4 images) */}
-              {images.length >= 4 && (
-                <div className="grid grid-cols-3 gap-3">
-                  {[3, 4, 5].map(offset => {
-                    const img = images[(current + offset) % images.length];
-                    if (!img) return <div key={offset} style={{ background: '#EDE0C4', height: '180px' }} />;
-                    return (
-                      <div
-                        key={`${img.id}-row2-${offset}`}
-                        className="overflow-hidden cursor-pointer group relative"
-                        style={{ height: '180px', background: '#EDE0C4' }}
-                        onClick={() => setLightbox(images.indexOf(img))}
-                      >
-                        <img
-                          src={proxyImageUrl(img.imagen_url)}
-                          alt={img.titulo || 'Natura'}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          loading="lazy"
-                        />
-                        <div
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                          style={{ background: 'rgba(26,18,8,0.35)' }}
-                        />
-                      </div>
-                    );
-                  })}
+              {images.length > display.length && (
+                <div className="mt-8 flex justify-center">
+                  <button
+                    onClick={() => setShowAll(true)}
+                    className="n-btn n-btn-ghost"
+                  >
+                    Ver todas ({images.length})
+                  </button>
                 </div>
               )}
-
-              {/* Controles de navegación + dots + botón */}
-              <div className="flex items-center justify-between pt-4">
-                {/* Prev/Next */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={prev}
-                    aria-label="Anterior"
-                    className="w-10 h-10 flex items-center justify-center transition-all hover:opacity-80 active:scale-95"
-                    style={{ border: '1px solid rgba(184,134,11,0.25)', color: '#B8860B' }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                  <button
-                    onClick={next}
-                    aria-label="Siguiente"
-                    className="w-10 h-10 flex items-center justify-center transition-all hover:opacity-80 active:scale-95"
-                    style={{ border: '1px solid rgba(184,134,11,0.25)', color: '#B8860B' }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                </div>
-
-                {/* Dots */}
-                <div className="flex gap-1.5 items-center">
-                  {images.slice(0, Math.min(images.length, 10)).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrent(i)}
-                      aria-label={`Imagen ${i + 1}`}
-                      className="transition-all duration-300"
-                      style={{
-                        width: current === i ? '20px' : '5px',
-                        height: '5px',
-                        background: current === i ? '#B8860B' : 'rgba(184,134,11,0.2)',
-                        borderRadius: '3px',
-                      }}
-                    />
-                  ))}
-                  {images.length > 10 && (
-                    <span className="text-xs" style={{ color: 'rgba(184,134,11,0.4)', fontFamily: 'Jost, sans-serif' }}>+{images.length - 10}</span>
-                  )}
-                </div>
-
-                {/* Ver todas */}
-                <button
-                  onClick={() => setVerTodas(true)}
-                  className="flex items-center gap-2 text-xs tracking-[0.18em] uppercase pb-0.5 transition-opacity hover:opacity-60"
-                  style={{ color: '#B8860B', borderBottom: '1px solid rgba(184,134,11,0.4)', fontFamily: 'Jost, sans-serif' }}
-                >
-                  Ver todas
-                  <span style={{ color: 'rgba(184,134,11,0.45)' }}>({images.length})</span>
-                </button>
-              </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Modal Ver todas */}
-      {verTodas && (
-        <div
-          className="fixed inset-0 z-50 overflow-y-auto"
-          style={{ background: 'rgba(10,8,2,0.97)' }}
-        >
-          <div className="max-w-6xl mx-auto px-6 py-12">
+      {/* Modal: todas */}
+      {showAll && (
+        <div className="fixed inset-0 z-[70] overflow-y-auto" style={{ background: "rgba(10,7,4,0.97)" }}>
+          <div className="n-container py-12">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <p className="text-xs tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(184,134,11,0.6)', fontFamily: 'Jost, sans-serif' }}>Galería completa</p>
-                <h3 className="text-3xl font-light" style={{ color: '#FAF6EE', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+                <p className="text-[0.65rem] tracking-[0.28em] uppercase text-[color:var(--color-gold-2)] opacity-70 mb-1">
+                  Galería completa
+                </p>
+                <h3 className="font-serif text-3xl text-[color:var(--color-cream)]">
                   {images.length} imágenes
                 </h3>
               </div>
               <button
-                onClick={() => setVerTodas(false)}
+                onClick={() => setShowAll(false)}
+                className="w-10 h-10 flex items-center justify-center border border-[rgba(245,230,192,0.15)] text-[color:var(--color-cream)] hover:border-[color:var(--color-gold-2)] transition-colors"
                 aria-label="Cerrar galería"
-                className="w-10 h-10 flex items-center justify-center transition-opacity hover:opacity-60"
-                style={{ color: '#F5E6C0', border: '1px solid rgba(245,230,192,0.15)' }}
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                <Close size={14} />
               </button>
             </div>
 
             <div className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
-              {images.map((img, idx) => (
-                <div
+              {images.map((img, i) => (
+                <button
                   key={img.id}
-                  className="break-inside-avoid overflow-hidden cursor-pointer group relative"
-                  onClick={() => { setLightbox(idx); setVerTodas(false); }}
+                  onClick={() => { setLightbox(i); setShowAll(false); }}
+                  className="group block w-full break-inside-avoid overflow-hidden relative"
                 >
-                  <img
-                    src={proxyImageUrl(img.imagen_url)}
-                    alt={img.titulo || 'Natura'}
-                    className="w-full object-cover transition-all duration-500 group-hover:scale-[1.03] group-hover:brightness-90"
-                    loading="lazy"
+                  <Image
+                    src={proxyImageUrl(img.imagen_url) ?? ""}
+                    alt={img.titulo || "Composición floral"}
+                    width={400}
+                    height={500}
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   />
-                  <div
-                    className="absolute inset-0 flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{ background: 'linear-gradient(to top, rgba(26,18,8,0.65), transparent)' }}
-                  >
-                    {img.titulo && (
-                      <p className="text-xs tracking-wide" style={{ color: '#F5E6C0', fontFamily: 'Jost, sans-serif' }}>{img.titulo}</p>
-                    )}
-                  </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -394,59 +187,61 @@ export default function GaleriaSection() {
       {/* Lightbox */}
       {lightbox !== null && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-          style={{ background: 'rgba(10,8,2,0.98)' }}
-          onClick={() => setLightbox(null)}
-          onTouchStart={onLbTouchStart}
-          onTouchEnd={onLbTouchEnd}
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+          style={{ background: "rgba(10,7,4,0.98)" }}
+          onClick={closeLB}
+          onTouchStart={(e) => (lbTouchStartX.current = e.touches[0].clientX)}
+          onTouchEnd={(e) => {
+            if (lbTouchStartX.current === null) return;
+            const dx = e.changedTouches[0].clientX - lbTouchStartX.current;
+            if (Math.abs(dx) > 50) (dx < 0 ? nextLB : prevLB)();
+            lbTouchStartX.current = null;
+          }}
         >
-          {/* Cerrar */}
           <button
-            className="absolute top-5 right-6 w-10 h-10 flex items-center justify-center transition-opacity hover:opacity-60"
-            style={{ color: '#F5E6C0', border: '1px solid rgba(245,230,192,0.15)' }}
-            onClick={() => setLightbox(null)}
+            onClick={closeLB}
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center border border-[rgba(245,230,192,0.15)] text-[color:var(--color-cream)] hover:border-[color:var(--color-gold-2)] transition-colors"
             aria-label="Cerrar"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            <Close size={14} />
           </button>
-
-          {/* Prev */}
           <button
-            className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center transition-all hover:opacity-70 active:scale-95"
-            style={{ color: '#F5E6C0', border: '1px solid rgba(245,230,192,0.18)' }}
-            onClick={e => { e.stopPropagation(); setLightbox(i => i !== null ? (i - 1 + images.length) % images.length : null); }}
+            onClick={(e) => { e.stopPropagation(); prevLB(); }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[rgba(245,230,192,0.15)] text-[color:var(--color-cream)] hover:border-[color:var(--color-gold-2)] transition-colors"
             aria-label="Anterior"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <ChevronLeft size={14} />
           </button>
-
-          {/* Imagen */}
-          <img
-            src={proxyImageUrl(images[lightbox].imagen_url)}
-            alt={images[lightbox].titulo || 'Natura'}
-            className="max-w-full max-h-[85vh] object-contain"
-            style={{ boxShadow: '0 0 80px rgba(184,134,11,0.08)' }}
-            onClick={e => e.stopPropagation()}
-          />
-
-          {/* Next */}
+          <div
+            key={lightbox}
+            className="relative flex items-center justify-center max-w-[92vw]"
+            style={{ maxHeight: "88vh", animation: "n-lineReveal 0.28s var(--ease-out) reverse" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={proxyImageUrl(images[lightbox]?.imagen_url) ?? ""}
+              alt={images[lightbox]?.titulo || "Composición floral"}
+              width={1400}
+              height={1050}
+              sizes="(max-width: 768px) 100vw, 90vw"
+              className="object-contain max-h-[88vh] w-auto h-auto"
+              priority
+            />
+          </div>
           <button
-            className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center transition-all hover:opacity-70 active:scale-95"
-            style={{ color: '#F5E6C0', border: '1px solid rgba(245,230,192,0.18)' }}
-            onClick={e => { e.stopPropagation(); setLightbox(i => i !== null ? (i + 1) % images.length : null); }}
+            onClick={(e) => { e.stopPropagation(); nextLB(); }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[rgba(245,230,192,0.15)] text-[color:var(--color-cream)] hover:border-[color:var(--color-gold-2)] transition-colors"
             aria-label="Siguiente"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <ChevronRight size={14} />
           </button>
-
-          {/* Contador + título */}
-          <div className="absolute bottom-5 flex flex-col items-center gap-1.5">
-            {images[lightbox].titulo && (
-              <p className="text-xs tracking-widest uppercase" style={{ color: 'rgba(245,230,192,0.45)', fontFamily: 'Jost, sans-serif' }}>
+          <div className="absolute bottom-6 flex flex-col items-center gap-1">
+            {images[lightbox]?.titulo && (
+              <p className="text-xs tracking-[0.22em] uppercase text-[rgba(245,230,192,0.5)]">
                 {images[lightbox].titulo}
               </p>
             )}
-            <p className="text-xs" style={{ color: 'rgba(245,230,192,0.25)', fontFamily: 'Jost, sans-serif' }}>
+            <p className="text-[0.68rem] text-[rgba(245,230,192,0.3)] tabular-nums">
               {lightbox + 1} / {images.length}
             </p>
           </div>

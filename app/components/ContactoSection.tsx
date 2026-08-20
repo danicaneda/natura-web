@@ -1,331 +1,304 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import dynamic from 'next/dynamic';
+import { useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import SectionHeader from "./ui/SectionHeader";
+import { ArrowRight, ArrowUpRight, Mail, MapPin, Phone, WhatsAppIcon } from "./ui/Icons";
+import { SITE } from "@/app/lib/site";
 
-const MapaReinosa = dynamic(() => import('./MapaReinosa'), { ssr: false, loading: () => (
-  <div style={{ width: '100%', height: '320px', background: '#EDE0C4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-    <span style={{ color: '#8A7560', fontFamily: 'Jost, sans-serif', fontSize: '0.85rem', letterSpacing: '0.1em' }}>Cargando mapa…</span>
-  </div>
-) });
+const MapaReinosa = dynamic(() => import("./MapaReinosa"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-[color:var(--color-cream-2)]">
+      <span className="text-sm text-[color:var(--color-ink-5)]">Cargando mapa…</span>
+    </div>
+  ),
+});
 
-const WA_NUMBER = '34606598156';
-const WA_URL = `https://wa.me/${WA_NUMBER}`;
+const OCASIONES = ["Regalo", "Boda", "Comunión o bautizo", "Evento o celebración", "Funeral", "Decoración", "Otro"];
 
-function buildWaUrl(nombre: string, mensaje: string): string {
-  const text = `Hola, soy ${nombre}. ${mensaje}`.trim();
-  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
+interface FormState {
+  nombre: string;
+  email: string;
+  telefono: string;
+  ocasion: string;
+  mensaje: string;
 }
 
 export default function ContactoSection() {
-  const [form, setForm] = useState({ nombre: '', email: '', telefono: '', mensaje: '' });
-  const [errors, setErrors] = useState<Record<string, string>>({} as Record<string, string>);
-  const [enviado, setEnviado] = useState(false);
-  const [enviando, setEnviando] = useState(false);
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const headerRef = useRef<HTMLDivElement>(null);
+  const [form, setForm] = useState<FormState>({
+    nombre: "",
+    email: "",
+    telefono: "",
+    ocasion: "",
+    mensaje: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  useEffect(() => {
-    const el = headerRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setHeaderVisible(true); obs.disconnect(); } }, { threshold: 0.2 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  const set = (k: keyof FormState, v: string) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    if (errors[k]) setErrors((e) => { const c = { ...e }; delete c[k]; return c; });
+  };
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!form.nombre.trim()) errs.nombre = 'El nombre es obligatorio';
-    if (!form.email.trim()) {
-      errs.email = 'El email es obligatorio';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errs.email = 'Introduce un email válido';
-    }
-    if (!form.mensaje.trim()) errs.mensaje = 'El mensaje es obligatorio';
-    else if (form.mensaje.trim().length < 10) errs.mensaje = 'El mensaje es demasiado corto';
+    if (!form.nombre.trim()) errs.nombre = "El nombre es obligatorio";
+    if (!form.email.trim()) errs.email = "El email es obligatorio";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "Introduce un email válido";
+    if (!form.mensaje.trim()) errs.mensaje = "El mensaje es obligatorio";
+    else if (form.mensaje.trim().length < 10) errs.mensaje = "Cuéntanos un poco más";
     return errs;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setSending(true);
     setErrors({});
-    setEnviando(true);
     try {
-      const res = await fetch('/api/contacto', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/contacto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setErrors({ _form: data.error ?? 'Error al enviar. Intenta por WhatsApp.' });
+        setErrors({ _form: data?.error ?? "No pudimos enviar. Prueba por WhatsApp." });
         return;
       }
-      setEnviado(true);
+      setSent(true);
     } catch {
-      setErrors({ _form: 'Error de conexión. Intenta por WhatsApp.' });
+      setErrors({ _form: "Sin conexión. Prueba por WhatsApp." });
     } finally {
-      setEnviando(false);
+      setSending(false);
     }
   };
 
-  const handleChange = (field: string, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors(prev => { const n = { ...prev }; delete n[field]; return n; });
-  };
-
-  const WA_SVG = (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.558 4.118 1.529 5.845L.057 23.885l6.23-1.635A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.877 9.877 0 01-5.031-1.38l-.36-.214-3.742.981 1-3.642-.235-.374A9.861 9.861 0 012.118 12C2.118 6.533 6.533 2.118 12 2.118S21.882 6.533 21.882 12 17.467 21.882 12 21.882z"/>
-    </svg>
-  );
-
   return (
-    <section id="contacto" style={{ background: '#F5EDD8', width: '100%', display: 'block' }}>
-      <div className="w-full max-w-6xl mx-auto px-6 py-28">
+    <section id="contacto" className="bg-[color:var(--color-cream-2)]">
+      <div className="n-container n-section-y">
+        <SectionHeader
+          eyebrow="Contacto"
+          title={<>Hablemos de tu <em className="text-[color:var(--color-gold)]">pedido</em></>}
+          subtitle="Cuéntanos qué necesitas y te ayudamos a crear la composición perfecta."
+        />
 
-        {/* Header con scroll-reveal */}
-        <div
-          ref={headerRef}
-          className="flex flex-col items-center text-center mb-20"
-          style={{
-            opacity: headerVisible ? 1 : 0,
-            transform: headerVisible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.7s ease, transform 0.7s ease',
-          }}
-        >
-          <p className="text-xs tracking-[0.3em] uppercase mb-4" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>
-            Contacto
-          </p>
-          <h2 className="text-5xl md:text-6xl font-light mb-6" style={{ color: '#1A1208', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-            Hablemos de tu <em>pedido</em>
-          </h2>
-          <div className="w-12 h-px mb-6" style={{ background: '#B8860B' }} />
-          <p className="text-base max-w-xl" style={{ color: '#8A7560', fontFamily: 'Jost, sans-serif' }}>
-            Cuéntanos qué necesitas y te ayudamos a crear la composición perfecta.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-start">
-
-          {/* Info contacto — 2/5 */}
-          <div className="lg:col-span-2 flex flex-col gap-8">
-
+        <div className="mt-16 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          {/* Info */}
+          <div className="lg:col-span-5 flex flex-col gap-8">
             <div>
-              <p className="text-xs tracking-[0.2em] uppercase mb-1.5" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>Visítanos</p>
-              <p style={{ color: '#1A1208', fontFamily: 'Jost, sans-serif', fontSize: '0.95rem' }}>C. Peligros, 2, 39200 Reinosa, Cantabria</p>
-            </div>
-
-            <div>
-              <p className="text-xs tracking-[0.2em] uppercase mb-2" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>Teléfono</p>
-              <div className="flex items-center gap-3 flex-wrap">
-                <a
-                  href="tel:+34606598156"
-                  className="transition-opacity hover:opacity-70"
-                  style={{ color: '#1A1208', fontFamily: 'Jost, sans-serif', fontSize: '0.95rem' }}
-                >
-                  +34 606 59 81 56
-                </a>
-                <a
-                  href={WA_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Escribir por WhatsApp"
-                  className="flex items-center gap-1.5 px-3 py-1 transition-all hover:opacity-85 active:scale-95"
-                  style={{ background: '#25D366', borderRadius: '20px', color: 'white' }}
-                >
-                  {WA_SVG}
-                  <span style={{ fontSize: '0.75rem', fontFamily: 'Jost, sans-serif', fontWeight: 500 }}>WhatsApp</span>
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs tracking-[0.2em] uppercase mb-1.5" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>Email</p>
+              <span className="n-mono text-[color:var(--color-gold-3)]">Visítanos</span>
+              <p className="mt-2 flex items-start gap-2 text-[color:var(--color-ink-2)]">
+                <MapPin size={16} className="mt-0.5 flex-none text-[color:var(--color-gold)]" />
+                <span>{SITE.address.street}<br />{SITE.address.postalCode} {SITE.address.city}, {SITE.address.region}</span>
+              </p>
               <a
-                href="mailto:terear@hotmail.es"
-                className="transition-opacity hover:opacity-70"
-                style={{ color: '#1A1208', fontFamily: 'Jost, sans-serif', fontSize: '0.95rem' }}
+                href={SITE.google.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 n-link text-[0.8rem] inline-flex items-center gap-1"
               >
-                terear@hotmail.es
+                Cómo llegar <ArrowUpRight size={10} />
               </a>
             </div>
 
-            <div className="w-12 h-px" style={{ background: 'rgba(184,134,11,0.25)' }} />
-
-            {/* Horario */}
             <div>
-              <p className="text-xs tracking-[0.2em] uppercase mb-4" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>Horario</p>
-              <div className="space-y-2.5" style={{ fontFamily: 'Jost, sans-serif' }}>
-                {[
-                  ['Lunes – Viernes', '9:30 – 14:00 · 17:00 – 20:00', false],
-                  ['Sábado', '9:30 – 14:00', false],
-                  ['Domingo', 'Cerrado', true],
-                ].map(([dia, hora, cerrado]) => (
-                  <div key={String(dia)} className="flex justify-between text-sm">
-                    <span style={{ color: '#4A3C28' }}>{dia}</span>
-                    <span style={{ color: cerrado ? '#B8A88A' : '#B8860B' }}>{hora}</span>
-                  </div>
-                ))}
+              <span className="n-mono text-[color:var(--color-gold-3)]">Teléfono</span>
+              <div className="mt-2 flex flex-col gap-1">
+                <a href={`tel:${SITE.phone.tel}`} className="text-[color:var(--color-ink-2)] flex items-center gap-2 hover:text-[color:var(--color-gold-3)] transition-colors">
+                  <Phone size={14} className="text-[color:var(--color-gold)]" />
+                  {SITE.phone.display}
+                </a>
+                <a href={`tel:${SITE.phone.tel2}`} className="text-[color:var(--color-ink-4)] flex items-center gap-2 hover:text-[color:var(--color-gold-3)] transition-colors text-sm">
+                  <Phone size={13} className="text-[color:var(--color-gold-2)]" />
+                  {SITE.phone.display2}
+                </a>
               </div>
+              <a
+                href={SITE.whatsapp.url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex items-center gap-2 text-[color:#128C7E] text-sm hover:opacity-80 transition-opacity"
+              >
+                <WhatsAppIcon size={14} />
+                Escribir por WhatsApp
+              </a>
+            </div>
+
+            <div>
+              <span className="n-mono text-[color:var(--color-gold-3)]">Email</span>
+              <p className="mt-2">
+                <a href={`mailto:${SITE.email}`} className="text-[color:var(--color-ink-2)] flex items-center gap-2 hover:text-[color:var(--color-gold-3)] transition-colors">
+                  <Mail size={14} className="text-[color:var(--color-gold)]" />
+                  {SITE.email}
+                </a>
+              </p>
+            </div>
+
+            <div className="pt-6 border-t border-[color:var(--rule-soft)]">
+              <span className="n-mono text-[color:var(--color-gold-3)]">Horario</span>
+              <ul className="mt-3 space-y-2 text-sm">
+                {SITE.hours.map((h) => (
+                  <li key={h.label} className="flex justify-between gap-4">
+                    <span className="text-[color:var(--color-ink-3)]">{h.label}</span>
+                    <span className={h.value === "Cerrado" ? "text-[color:var(--color-ink-5)]" : "text-[color:var(--color-gold-3)]"}>
+                      {h.value}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          {/* Formulario — 3/5 */}
-          <div className="lg:col-span-3">
-            {enviado ? (
-              <div className="flex flex-col items-center text-center py-16">
-                <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center mb-6"
-                  style={{ background: 'rgba(184,134,11,0.1)', border: '1px solid rgba(184,134,11,0.25)' }}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="1.8">
-                    <polyline points="20 6 9 17 4 12"/>
+          {/* Formulario */}
+          <div className="lg:col-span-7">
+            {sent ? (
+              <div className="bg-[color:var(--color-cream)] border border-[color:var(--rule-soft)] p-10 md:p-14 flex flex-col items-center text-center gap-4">
+                <div className="w-14 h-14 rounded-full flex items-center justify-center bg-[rgba(184,134,11,0.1)] border border-[color:var(--rule)]">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </div>
-                <h3 className="text-3xl font-light mb-3" style={{ color: '#1A1208', fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-                  ¡Mensaje recibido!
-                </h3>
-                <p className="mb-4 text-sm" style={{ color: '#8A7560', fontFamily: 'Jost, sans-serif' }}>
-                  Te contactaremos en breve. Gracias por confiar en Natura.
-                </p>
-                <a
-                  href={buildWaUrl(form.nombre, form.mensaje)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-5 py-2.5 mb-6 text-xs tracking-[0.1em] uppercase transition-all hover:opacity-85 active:scale-95"
-                  style={{ background: '#25D366', color: 'white', fontFamily: 'Jost, sans-serif', fontWeight: 500 }}
-                >
-                  {WA_SVG}
-                  También puedes escribirnos por WhatsApp
-                </a>
-                <button
-                  className="text-xs tracking-[0.2em] uppercase pb-0.5 transition-opacity hover:opacity-60"
-                  style={{ color: '#B8860B', borderBottom: '1px solid #B8860B', fontFamily: 'Jost, sans-serif' }}
-                  onClick={() => { setEnviado(false); setForm({ nombre: '', email: '', telefono: '', mensaje: '' }); setErrors({}); }}
-                >
-                  Enviar otro mensaje
-                </button>
+                <h3 className="font-serif text-3xl text-[color:var(--color-ink-2)]">¡Mensaje recibido!</h3>
+                <p className="n-body">Te contactaremos en breve. Gracias por confiar en Natura.</p>
+                <div className="flex flex-col sm:flex-row gap-3 mt-2">
+                  <a
+                    href={SITE.whatsapp.url(`Hola, soy ${form.nombre}. ${form.mensaje}`.trim())}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="n-btn n-btn-whatsapp"
+                  >
+                    <WhatsAppIcon size={13} />
+                    También por WhatsApp
+                  </a>
+                  <button
+                    onClick={() => { setSent(false); setForm({ nombre: "", email: "", telefono: "", ocasion: "", mensaje: "" }); }}
+                    className="n-btn n-btn-ghost"
+                  >
+                    Enviar otro mensaje
+                  </button>
+                </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-                {[
-                  { id: 'nombre', label: 'Nombre', type: 'text', placeholder: 'María García', required: true },
-                  { id: 'email', label: 'Email', type: 'email', placeholder: 'maria@ejemplo.com', required: true },
-                  { id: 'telefono', label: 'Teléfono', type: 'tel', placeholder: '+34 606 59 81 56', required: false },
-                ].map(field => (
-                  <div key={field.id} className="flex flex-col gap-1">
-                    <label
-                      htmlFor={field.id}
-                      className="text-xs tracking-[0.15em] uppercase"
-                      style={{ color: errors[field.id] ? '#8B2A2A' : '#8A7560', fontFamily: 'Jost, sans-serif' }}
-                    >
-                      {field.label}{field.required && ' *'}
-                    </label>
+              <form ref={formRef} onSubmit={submit} noValidate className="bg-[color:var(--color-cream)] p-8 md:p-10 border border-[color:var(--rule-soft)]">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="nombre" className="n-label">Nombre <span className="text-[color:var(--color-danger)]">*</span></label>
                     <input
-                      id={field.id}
-                      type={field.type}
-                      placeholder={field.placeholder}
-                      value={form[field.id as keyof typeof form]}
-                      onChange={e => handleChange(field.id, e.target.value)}
-                      className="w-full px-0 py-3 text-sm outline-none transition-all"
-                      style={{
-                        background: 'transparent',
-                        borderBottom: `1px solid ${errors[field.id] ? 'rgba(139,42,42,0.5)' : 'rgba(184,134,11,0.25)'}`,
-                        borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-                        color: '#1A1208',
-                        fontFamily: 'Jost, sans-serif',
-                      }}
-                      onFocus={e => (e.target.style.borderBottomColor = errors[field.id] ? 'rgba(139,42,42,0.7)' : '#B8860B')}
-                      onBlur={e => (e.target.style.borderBottomColor = errors[field.id] ? 'rgba(139,42,42,0.5)' : 'rgba(184,134,11,0.25)')}
+                      id="nombre"
+                      type="text"
+                      value={form.nombre}
+                      onChange={(e) => set("nombre", e.target.value)}
+                      autoComplete="name"
+                      className="n-field"
+                      aria-invalid={!!errors.nombre}
+                      aria-describedby={errors.nombre ? "err-nombre" : undefined}
+                      placeholder="María García"
                     />
-                    {errors[field.id] && (
-                      <span className="text-xs mt-0.5" style={{ color: '#8B2A2A', fontFamily: 'Jost, sans-serif' }}>
-                        {errors[field.id]}
-                      </span>
-                    )}
+                    {errors.nombre && <span id="err-nombre" className="text-xs text-[color:var(--color-danger)] mt-1">{errors.nombre}</span>}
                   </div>
-                ))}
-
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center justify-between">
-                    <label htmlFor="mensaje" className="text-xs tracking-[0.15em] uppercase" style={{ color: errors.mensaje ? '#8B2A2A' : '#8A7560', fontFamily: 'Jost, sans-serif' }}>
-                      Mensaje *
-                    </label>
-                    <span
-                      className="text-xs tabular-nums"
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="email" className="n-label">Email <span className="text-[color:var(--color-danger)]">*</span></label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => set("email", e.target.value)}
+                      autoComplete="email"
+                      className="n-field"
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? "err-email" : undefined}
+                      placeholder="maria@ejemplo.com"
+                    />
+                    {errors.email && <span id="err-email" className="text-xs text-[color:var(--color-danger)] mt-1">{errors.email}</span>}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="telefono" className="n-label">Teléfono <span className="text-[color:var(--color-ink-5)] normal-case tracking-normal text-[0.68rem]">(opcional)</span></label>
+                    <input
+                      id="telefono"
+                      type="tel"
+                      value={form.telefono}
+                      onChange={(e) => set("telefono", e.target.value)}
+                      autoComplete="tel"
+                      className="n-field"
+                      placeholder="+34 606 59 81 56"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="ocasion" className="n-label">Para qué ocasión</label>
+                    <select
+                      id="ocasion"
+                      value={form.ocasion}
+                      onChange={(e) => set("ocasion", e.target.value)}
+                      className="n-field appearance-none pr-6 cursor-pointer"
                       style={{
-                        fontFamily: 'Jost, sans-serif',
-                        color: form.mensaje.length > 480
-                          ? '#8B2A2A'
-                          : form.mensaje.length > 380
-                          ? '#B8860B'
-                          : 'rgba(138,117,96,0.5)',
-                        transition: 'color 0.2s ease',
+                        backgroundImage:
+                          "url(\"data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236E5B3F' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "right 4px center",
                       }}
                     >
-                      {form.mensaje.length}/500
+                      <option value="">Selecciona…</option>
+                      {OCASIONES.map((o) => (
+                        <option key={o} value={o}>{o}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1 mt-6">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="mensaje" className="n-label">Mensaje <span className="text-[color:var(--color-danger)]">*</span></label>
+                    <span className={`text-[0.65rem] tabular-nums ${form.mensaje.length > 480 ? "text-[color:var(--color-danger)]" : "text-[color:var(--color-ink-5)]"}`}>
+                      {form.mensaje.length} / 500
                     </span>
                   </div>
                   <textarea
                     id="mensaje"
-                    rows={4}
+                    rows={5}
                     maxLength={500}
-                    placeholder="Cuéntanos qué necesitas: tipo de flores, ocasión, presupuesto..."
                     value={form.mensaje}
-                    onChange={e => handleChange('mensaje', e.target.value)}
-                    className="w-full px-0 py-3 text-sm outline-none resize-none transition-all"
-                    style={{
-                      background: 'transparent',
-                      borderBottom: `1px solid ${errors.mensaje ? 'rgba(139,42,42,0.5)' : 'rgba(184,134,11,0.25)'}`,
-                      borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-                      color: '#1A1208',
-                      fontFamily: 'Jost, sans-serif',
-                    }}
-                    onFocus={e => (e.target.style.borderBottomColor = errors.mensaje ? 'rgba(139,42,42,0.7)' : '#B8860B')}
-                    onBlur={e => (e.target.style.borderBottomColor = errors.mensaje ? 'rgba(139,42,42,0.5)' : 'rgba(184,134,11,0.25)')}
+                    onChange={(e) => set("mensaje", e.target.value)}
+                    className="n-field resize-none"
+                    placeholder="Cuéntanos qué necesitas: tipo de flores, ocasión, presupuesto, fecha…"
+                    aria-invalid={!!errors.mensaje}
+                    aria-describedby={errors.mensaje ? "err-msg" : undefined}
                   />
-                  {errors.mensaje && (
-                    <span className="text-xs mt-0.5" style={{ color: '#8B2A2A', fontFamily: 'Jost, sans-serif' }}>
-                      {errors.mensaje}
-                    </span>
-                  )}
+                  {errors.mensaje && <span id="err-msg" className="text-xs text-[color:var(--color-danger)] mt-1">{errors.mensaje}</span>}
                 </div>
 
                 {errors._form && (
-                  <div className="py-3 px-4 text-sm" style={{ background: 'rgba(139,42,42,0.08)', border: '1px solid rgba(139,42,42,0.2)', color: '#8B2A2A', fontFamily: 'Jost, sans-serif' }}>
+                  <p className="mt-4 p-3 text-sm text-[color:var(--color-danger)] bg-[rgba(139,42,42,0.06)] border border-[rgba(139,42,42,0.18)]">
                     {errors._form}
-                  </div>
+                  </p>
                 )}
-                <div className="flex items-center justify-between pt-2 flex-wrap gap-4">
+
+                <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
                   <a
-                    href={WA_URL}
+                    href={SITE.whatsapp.url()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-xs transition-opacity hover:opacity-80"
-                    style={{ color: '#25D366', fontFamily: 'Jost, sans-serif' }}
+                    className="inline-flex items-center gap-2 text-sm text-[color:#128C7E] hover:opacity-80 transition-opacity"
                   >
-                    <span style={{ color: '#25D366' }}>{WA_SVG}</span>
-                    Escribir por WhatsApp
+                    <WhatsAppIcon size={13} />
+                    Prefiero WhatsApp
                   </a>
-                  <button
-                    type="submit"
-                    disabled={enviando}
-                    className="px-8 py-3 text-xs tracking-[0.2em] uppercase font-medium transition-all hover:opacity-85 disabled:opacity-50 active:scale-95 flex items-center gap-2"
-                    style={{ background: '#B8860B', color: '#FAF6EE', fontFamily: 'Jost, sans-serif' }}
-                  >
-                    {enviando ? (
+                  <button type="submit" disabled={sending} className="n-btn n-btn-primary">
+                    {sending ? (
                       <>
-                        <span
-                          className="w-3.5 h-3.5 border border-white/40 border-t-white rounded-full"
-                          style={{ animation: 'spin 0.8s linear infinite', display: 'inline-block' }}
-                        />
+                        <span className="w-3.5 h-3.5 border border-[rgba(250,246,238,0.35)] border-t-[color:var(--color-cream)] rounded-full n-spin" />
                         Enviando…
                       </>
-                    ) : 'Enviar mensaje'}
+                    ) : (
+                      <>
+                        Enviar mensaje
+                        <ArrowRight size={14} />
+                      </>
+                    )}
                   </button>
                 </div>
               </form>
@@ -334,32 +307,26 @@ export default function ContactoSection() {
         </div>
 
         {/* Mapa */}
-        <div className="mt-16" style={{ overflow: 'hidden', border: '1px solid rgba(184,134,11,0.18)' }}>
-          <div className="flex items-center gap-2 px-4 py-3" style={{ background: '#EDE0C4' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-            <p className="text-xs tracking-[0.15em] uppercase" style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif' }}>
-              C. Peligros, 2 — 39200 Reinosa, Cantabria
-            </p>
+        <div className="mt-16 overflow-hidden border border-[color:var(--rule-soft)]">
+          <div className="flex items-center gap-3 px-5 py-3 bg-[color:var(--color-cream)]">
+            <MapPin size={14} className="text-[color:var(--color-gold)]" />
+            <span className="text-[0.7rem] tracking-[0.16em] uppercase text-[color:var(--color-ink-3)]">
+              {SITE.address.street} — {SITE.address.postalCode} {SITE.address.city}
+            </span>
             <a
-              href="https://maps.google.com/?q=C.+Peligros+2+Reinosa+Cantabria"
+              href={SITE.google.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-auto text-xs transition-opacity hover:opacity-60 flex items-center gap-1"
-              style={{ color: '#B8860B', fontFamily: 'Jost, sans-serif', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+              className="ml-auto n-link text-xs inline-flex items-center gap-1"
             >
-              Abrir en Google Maps
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 9L9 1M9 1H3M9 1v6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              Google Maps <ArrowUpRight size={10} />
             </a>
           </div>
-          <div style={{ height: '360px' }}>
+          <div className="h-[380px]">
             <MapaReinosa />
           </div>
         </div>
       </div>
-
     </section>
   );
 }

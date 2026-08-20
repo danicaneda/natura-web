@@ -1,14 +1,16 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from "next";
+import { SITE } from "./lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/api/', '/_next/'],
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/api/", "/admin/", "/_next/"],
       },
     ],
-    sitemap: 'https://www.floristeria-natura.es/sitemap.xml',
+    sitemap: `${SITE.domain}/sitemap.xml`,
+    host: SITE.domain,
   };
 }
