@@ -30,8 +30,10 @@ interface ContactoBody {
 }
 
 function validate(body: ContactoBody): string | null {
-  if (!body.nombre?.trim()) return 'Nombre obligatorio';
-  if (!body.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return 'Email inválido';
+  if (!body.nombre?.trim() || body.nombre.trim().length > 120) return 'Nombre inválido';
+  if (!body.email?.trim() || !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(body.email.trim())) return 'Email inválido';
+  if (body.telefono && body.telefono.trim().length > 40) return 'Teléfono demasiado largo';
+  if (body.ocasion && body.ocasion.trim().length > 80) return 'Ocasión demasiado larga';
   if (!body.mensaje?.trim() || body.mensaje.trim().length < 10) return 'Mensaje demasiado corto';
   if (body.mensaje.length > 500) return 'Mensaje demasiado largo';
   return null;

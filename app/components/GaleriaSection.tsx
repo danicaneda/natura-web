@@ -40,6 +40,8 @@ export default function GaleriaSection() {
   const [lightbox, setLightbox] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
   const lbTouchStartX = useRef<number | null>(null);
+  const lbCloseRef = useRef<HTMLButtonElement>(null);
+  const lbTriggerRef = useRef<Element | null>(null);
 
   useEffect(() => {
     swr<Img[]>(
@@ -56,13 +58,19 @@ export default function GaleriaSection() {
 
   useEffect(() => {
     if (lightbox === null) return;
+    lbTriggerRef.current = document.activeElement;
+    const focusT = setTimeout(() => lbCloseRef.current?.focus(), 30);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeLB();
       if (e.key === "ArrowRight") nextLB();
       if (e.key === "ArrowLeft") prevLB();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      clearTimeout(focusT);
+      window.removeEventListener("keydown", onKey);
+      if (lbTriggerRef.current instanceof HTMLElement) lbTriggerRef.current.focus();
+    };
   }, [lightbox, closeLB, nextLB, prevLB]);
 
   useEffect(() => {
@@ -199,10 +207,11 @@ export default function GaleriaSection() {
           }}
         >
           <button
+            ref={lbCloseRef}
             onClick={closeLB}
             className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center border border-[rgba(245,230,192,0.15)] text-[color:var(--color-cream)] bg-[rgba(15,10,5,0.4)] backdrop-blur-sm hover:border-[color:var(--color-gold-2)] active:bg-[rgba(15,10,5,0.6)] transition-colors"
             style={{ top: "max(1rem, env(safe-area-inset-top, 0px))" }}
-            aria-label="Cerrar"
+            aria-label="Cerrar galería"
           >
             <Close size={14} />
           </button>

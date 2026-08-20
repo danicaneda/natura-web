@@ -47,7 +47,7 @@ export default function ContactoSection() {
     const errs: Record<string, string> = {};
     if (!form.nombre.trim()) errs.nombre = "El nombre es obligatorio";
     if (!form.email.trim()) errs.email = "El email es obligatorio";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "Introduce un email válido";
+    else if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(form.email.trim())) errs.email = "Introduce un email válido";
     if (!form.mensaje.trim()) errs.mensaje = "El mensaje es obligatorio";
     else if (form.mensaje.trim().length < 10) errs.mensaje = "Cuéntanos un poco más";
     return errs;

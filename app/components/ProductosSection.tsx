@@ -114,14 +114,22 @@ function ProductModal({ p, onClose }: { p: Producto; onClose: () => void }) {
   const img = proxyImageUrl(p.imagen_url);
   const { hasOffer, price } = priceOf(p);
   const waText = `Hola, me interesa: ${p.nombre}${price ? ` (${formatPrice(price)})` : ""}. ¿Podéis darme más detalles?`;
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<Element | null>(null);
 
   useEffect(() => {
+    triggerRef.current = document.activeElement;
     document.body.style.overflow = "hidden";
+    // Fija el foco al botón cerrar tras el paint para que Tab cicle dentro del modal
+    const focusT = setTimeout(() => closeBtnRef.current?.focus(), 30);
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     return () => {
+      clearTimeout(focusT);
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
+      // Devuelve el foco al elemento que lo abrió
+      if (triggerRef.current instanceof HTMLElement) triggerRef.current.focus();
     };
   }, [onClose]);
 
@@ -136,9 +144,10 @@ function ProductModal({ p, onClose }: { p: Producto; onClose: () => void }) {
     >
       <div className="relative bg-[color:var(--color-cream)] w-full max-w-3xl max-h-[94vh] sm:max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-[var(--shadow-lg)] rounded-t-2xl sm:rounded-none">
         <button
+          ref={closeBtnRef}
           onClick={onClose}
           className="absolute top-3 right-3 w-11 h-11 flex items-center justify-center bg-[rgba(15,10,5,0.08)] rounded-full text-[color:var(--color-ink-2)] hover:bg-[rgba(15,10,5,0.16)] active:bg-[rgba(15,10,5,0.22)] transition-colors z-10 backdrop-blur-sm"
-          aria-label="Cerrar"
+          aria-label={`Cerrar detalle de ${p.nombre}`}
         >
           <Close size={14} />
         </button>

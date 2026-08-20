@@ -55,12 +55,24 @@ function Item({ q, a, index }: { q: string; a: string; index: number }) {
           {q}
         </span>
         <span
-          className="flex-none w-6 h-6 flex items-center justify-center border border-[color:var(--rule)] transition-all"
-          style={{ background: open ? "var(--color-gold)" : "transparent", color: open ? "var(--color-cream)" : "var(--color-gold)" }}
+          className="flex-none w-7 h-7 flex items-center justify-center border rounded-full transition-all duration-300"
+          style={{
+            background: open ? "var(--color-gold)" : "transparent",
+            color: open ? "var(--color-cream)" : "var(--color-gold-3)",
+            borderColor: open ? "var(--color-gold)" : "var(--rule)",
+          }}
         >
-          <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
-            <path d="M4 1v6M1 4h6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" style={{ transformOrigin: "center", transition: "opacity 0.2s ease", opacity: open ? 0 : 1 }} />
-            <path d="M1 4h6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            aria-hidden="true"
+            style={{
+              transform: open ? "rotate(45deg)" : "rotate(0deg)",
+              transition: "transform 0.35s var(--ease-spring)",
+            }}
+          >
+            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
         </span>
       </button>
