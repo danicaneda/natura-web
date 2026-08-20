@@ -57,14 +57,14 @@ export default function CtaBanner() {
           ¿Tienes una ocasión{" "}
           <em className="text-[color:var(--color-gold-2)]">especial</em>?
           <br />
-          <span className="text-[color:rgba(250,246,238,0.5)] text-[0.6em] font-light">
+          <span className="text-[color:rgba(250,246,238,0.7)] text-[0.6em] font-light">
             Cuéntanos tu visión y la hacemos realidad.
           </span>
         </h2>
 
         <span className="n-rule" style={{ background: "var(--color-gold-2)", opacity: 0.4 }} />
 
-        <ul className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm text-[color:rgba(250,246,238,0.5)]">
+        <ul className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm text-[color:rgba(250,246,238,0.7)]">
           {["Bodas & ceremonias", "Eventos corporativos", "Comuniones & bautizos", "Entrega a domicilio"].map((s) => (
             <li key={s} className="tracking-[0.06em]">{s}</li>
           ))}

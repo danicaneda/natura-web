@@ -238,7 +238,7 @@ export default function GaleriaSection() {
           </button>
           <div className="absolute bottom-6 flex flex-col items-center gap-1">
             {images[lightbox]?.titulo && (
-              <p className="text-xs tracking-[0.22em] uppercase text-[rgba(245,230,192,0.5)]">
+              <p className="text-xs tracking-[0.22em] uppercase text-[rgba(245,230,192,0.75)] font-medium">
                 {images[lightbox].titulo}
               </p>
             )}

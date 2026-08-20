@@ -34,31 +34,33 @@ const AUTOPLAY_MS = 6500;
 
 function Card({ t }: { t: Testimonio }) {
   return (
-    <article className="relative bg-[color:var(--color-cream)] border border-[color:var(--rule-soft)] p-8 md:p-10 flex flex-col h-full">
+    <article
+      className="relative bg-[color:var(--color-cream)] border border-[color:var(--rule-soft)] p-8 md:p-10 flex flex-col h-full transition-shadow duration-300 hover:shadow-[var(--shadow-md)]"
+    >
       <span
         aria-hidden="true"
-        className="absolute top-4 left-6 font-serif text-[7rem] leading-none text-[color:var(--color-gold)] opacity-[0.08] pointer-events-none select-none"
+        className="absolute -top-2 left-6 font-serif text-[8rem] leading-none text-[color:var(--color-gold)] opacity-[0.10] pointer-events-none select-none"
       >
         &ldquo;
       </span>
-      <div className="flex gap-1 mb-4 text-[color:var(--color-gold-2)]">
+      <div className="flex gap-1 mb-4 text-[color:var(--color-gold)]">
         {Array.from({ length: 5 }).map((_, i) => (
           <Star key={i} size={12} filled={i < t.nota} />
         ))}
       </div>
-      <blockquote className="font-serif italic text-lg md:text-xl leading-[1.5] text-[color:var(--color-ink-2)] flex-1">
+      <blockquote className="font-serif italic text-lg md:text-xl leading-[1.55] text-[color:var(--color-ink-2)] flex-1">
         {t.texto}
       </blockquote>
       <div className="mt-8 pt-6 border-t border-[color:var(--rule-soft)] flex items-center justify-between gap-3">
         <div className="flex flex-col">
           <span className="text-sm text-[color:var(--color-ink-2)] font-medium">{t.nombre}</span>
           {t.ocasion && (
-            <span className="text-[0.6rem] tracking-[0.18em] uppercase text-[color:var(--color-gold-3)] mt-0.5">
+            <span className="text-[0.6rem] tracking-[0.18em] uppercase text-[color:var(--color-gold-3)] mt-1 font-medium">
               {t.ocasion}
             </span>
           )}
         </div>
-        <span className="inline-flex items-center gap-1.5 text-[0.65rem] text-[color:var(--color-ink-5)]">
+        <span className="inline-flex items-center gap-1.5 text-[0.65rem] text-[color:var(--color-ink-4)] font-medium">
           <Google size={12} />
           Google
         </span>

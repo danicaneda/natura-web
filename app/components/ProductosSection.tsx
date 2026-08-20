@@ -87,7 +87,7 @@ function ProductCard({ p, onOpen, delay = 0 }: { p: Producto; onOpen: (p: Produc
           )}
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-[0.6rem] tracking-[0.18em] uppercase text-[rgba(250,246,238,0.55)]">
+          <span className="text-[0.6rem] tracking-[0.18em] uppercase text-[rgba(250,246,238,0.72)] font-medium">
             {p.categoria}
           </span>
           <span className="text-[0.6rem] tracking-[0.18em] uppercase inline-flex items-center gap-1 text-[color:var(--color-gold-2)]">

@@ -25,7 +25,7 @@ export default function Footer() {
                 Natura
               </span>
             </div>
-            <p className="text-[color:rgba(250,246,238,0.55)] text-sm leading-relaxed max-w-sm">
+            <p className="text-[color:rgba(250,246,238,0.72)] text-sm leading-relaxed max-w-sm">
               Arte floral con alma. Ramos, plantas y arreglos únicos desde
               Reinosa, Cantabria.
             </p>
@@ -44,20 +44,20 @@ export default function Footer() {
 
           {/* Nav */}
           <div className="md:col-span-3 flex flex-col gap-3">
-            <span className="n-mono text-[color:rgba(212,160,23,0.55)]">Páginas</span>
+            <span className="n-mono text-[color:rgba(212,160,23,0.75)]">Páginas</span>
             <nav className="flex flex-col gap-2">
               {LINKS.map((l) => (
                 <button
                   key={l.id}
                   onClick={() => document.getElementById(l.id)?.scrollIntoView({ behavior: "smooth" })}
-                  className="text-left text-sm text-[color:rgba(250,246,238,0.6)] hover:text-[color:var(--color-gold-2)] transition-colors w-fit"
+                  className="text-left text-sm text-[color:rgba(250,246,238,0.78)] hover:text-[color:var(--color-gold-2)] transition-colors w-fit"
                 >
                   {l.label}
                 </button>
               ))}
               <a
                 href="/politica-privacidad"
-                className="text-sm text-[color:rgba(250,246,238,0.4)] hover:text-[color:var(--color-gold-2)] transition-colors w-fit"
+                className="text-sm text-[color:rgba(250,246,238,0.78)] hover:text-[color:var(--color-gold-2)] transition-colors w-fit"
               >
                 Política de privacidad
               </a>
@@ -66,8 +66,8 @@ export default function Footer() {
 
           {/* Contacto */}
           <div className="md:col-span-4 flex flex-col gap-3">
-            <span className="n-mono text-[color:rgba(212,160,23,0.55)]">Contacto</span>
-            <address className="not-italic text-sm text-[color:rgba(250,246,238,0.6)] flex flex-col gap-1.5">
+            <span className="n-mono text-[color:rgba(212,160,23,0.75)]">Contacto</span>
+            <address className="not-italic text-sm text-[color:rgba(250,246,238,0.78)] flex flex-col gap-1.5">
               <span>{SITE.address.street}</span>
               <span>{SITE.address.postalCode} {SITE.address.city}, {SITE.address.region}</span>
               <a href={`tel:${SITE.phone.tel}`} className="hover:text-[color:var(--color-gold-2)] transition-colors w-fit">
@@ -80,7 +80,7 @@ export default function Footer() {
                 {SITE.email}
               </a>
             </address>
-            <div className="mt-3 text-xs text-[color:rgba(250,246,238,0.4)] leading-relaxed">
+            <div className="mt-3 text-xs text-[color:rgba(250,246,238,0.78)] leading-relaxed">
               Lun–Vie: 9:30–14:00 · 17:00–20:00<br />
               Sáb: 9:30–14:00 · Dom: cerrado
             </div>
@@ -92,7 +92,7 @@ export default function Footer() {
           <span className="flex text-[color:var(--color-gold-2)] gap-0.5">
             {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={12} />)}
           </span>
-          <span className="text-[color:rgba(250,246,238,0.55)]">
+          <span className="text-[color:rgba(250,246,238,0.72)]">
             {SITE.google.rating.toFixed(1)} · {SITE.google.reviewCount} reseñas en Google
           </span>
           <a
@@ -106,7 +106,7 @@ export default function Footer() {
           </a>
         </div>
 
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[color:rgba(250,246,238,0.4)]">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[color:rgba(250,246,238,0.78)]">
           <p>© {new Date().getFullYear()} Natura Flores & Plantas — Reinosa, Cantabria.</p>
           <p className="inline-flex items-center gap-1.5">
             Hecho con

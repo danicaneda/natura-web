@@ -157,7 +157,7 @@ export default function ContactoSection() {
           {/* Formulario */}
           <div className="lg:col-span-7">
             {sent ? (
-              <div className="bg-[color:var(--color-cream)] border border-[color:var(--rule-soft)] p-10 md:p-14 flex flex-col items-center text-center gap-4">
+              <div className="bg-[color:var(--color-cream)] border border-[color:var(--rule-soft)] p-10 md:p-14 flex flex-col items-center text-center gap-4 shadow-[var(--shadow-sm)]">
                 <div className="w-14 h-14 rounded-full flex items-center justify-center bg-[rgba(184,134,11,0.1)] border border-[color:var(--rule)]">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <polyline points="20 6 9 17 4 12" />
@@ -184,7 +184,7 @@ export default function ContactoSection() {
                 </div>
               </div>
             ) : (
-              <form ref={formRef} onSubmit={submit} noValidate className="bg-[color:var(--color-cream)] p-8 md:p-10 border border-[color:var(--rule-soft)]">
+              <form ref={formRef} onSubmit={submit} noValidate className="bg-[color:var(--color-cream)] p-7 md:p-10 border border-[color:var(--rule-soft)] shadow-[var(--shadow-sm)]">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="flex flex-col gap-1">
                     <label htmlFor="nombre" className="n-label">Nombre <span className="text-[color:var(--color-danger)]">*</span></label>

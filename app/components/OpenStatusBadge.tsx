@@ -37,7 +37,7 @@ export default function OpenStatusBadge({ dark = false }: { dark?: boolean }) {
   const openBase   = dark ? "rgba(46,125,50,0.14)" : "rgba(46,125,50,0.08)";
   const closedBase = dark ? "rgba(255,255,255,0.05)" : "rgba(184,134,11,0.05)";
   const openText   = dark ? "rgba(190,230,190,0.92)" : "#245227";
-  const closedText = dark ? "rgba(250,246,238,0.55)"  : "var(--color-ink-4)";
+  const closedText = dark ? "rgba(250,246,238,0.78)"  : "var(--color-ink-4)";
   const border     = dark ? "rgba(255,255,255,0.12)"  : "var(--rule-soft)";
 
   return (

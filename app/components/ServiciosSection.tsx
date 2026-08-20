@@ -74,33 +74,39 @@ export default function ServiciosSection() {
               href={SITE.whatsapp.url(s.msg)}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative p-10 md:p-12 flex flex-col gap-6 min-h-[280px] transition-colors duration-300"
+              className="group relative p-10 md:p-12 flex flex-col gap-6 min-h-[280px] transition-all duration-500 focus-visible:z-10"
               style={{
                 background: "#12100A",
                 borderBottom: i < 2 ? "1px solid rgba(212,160,23,0.14)" : "none",
                 borderRight: i % 2 === 0 ? "1px solid rgba(212,160,23,0.14)" : "none",
               }}
             >
-              {/* Overlay al hover */}
+              {/* Overlay al hover — más rico */}
               <span
                 aria-hidden="true"
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background: "linear-gradient(135deg, rgba(212,160,23,0.06), transparent 55%)" }}
+                style={{ background: "linear-gradient(135deg, rgba(212,160,23,0.10), transparent 60%)" }}
+              />
+              {/* Línea dorada superior al hover */}
+              <span
+                aria-hidden="true"
+                className="absolute top-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-500 ease-out"
+                style={{ background: "linear-gradient(to right, var(--color-gold-2), transparent)" }}
               />
 
-              <span className="text-[0.62rem] tracking-[0.35em] uppercase text-[color:var(--color-gold-2)] opacity-60">
+              <span className="relative text-[0.62rem] tracking-[0.35em] uppercase text-[color:var(--color-gold-2)] opacity-80 font-medium">
                 {s.kicker} — Servicio
               </span>
 
-              <h3 className="n-h3 text-[color:var(--color-cream)] transition-colors group-hover:text-[color:var(--color-gold-2)]">
+              <h3 className="relative n-h3 text-[color:var(--color-cream)] transition-colors duration-300 group-hover:text-[color:var(--color-gold-2)]">
                 {s.title}
               </h3>
 
-              <p className="text-[color:rgba(250,246,238,0.55)] text-[0.9rem] leading-relaxed flex-1">
+              <p className="relative text-[color:rgba(250,246,238,0.72)] text-[0.9rem] leading-relaxed flex-1">
                 {s.desc}
               </p>
 
-              <span className="inline-flex items-center gap-2 text-[0.65rem] tracking-[0.22em] uppercase text-[color:var(--color-gold-2)]">
+              <span className="relative inline-flex items-center gap-2 text-[0.65rem] tracking-[0.22em] uppercase text-[color:var(--color-gold-2)] font-medium">
                 Consultar disponibilidad
                 <ArrowUpRight size={11} className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5" />
               </span>

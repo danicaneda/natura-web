@@ -83,7 +83,7 @@ export default function Navbar() {
               Natura
             </span>
             <span
-              className={`text-[0.55rem] tracking-[0.3em] uppercase mt-1 ${solid ? "text-[color:var(--color-ink-5)]" : "text-[rgba(250,246,238,0.55)]"}`}
+              className={`text-[0.55rem] tracking-[0.3em] uppercase mt-1 ${solid ? "text-[color:var(--color-ink-4)]" : "text-[rgba(250,246,238,0.75)]"}`}
             >
               Flores & Plantas
             </span>

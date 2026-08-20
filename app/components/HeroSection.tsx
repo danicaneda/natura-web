@@ -28,7 +28,7 @@ export default function HeroSection() {
   return (
     <section
       id="inicio"
-      className="relative min-h-[100svh] w-full overflow-hidden flex flex-col justify-end"
+      className="relative min-h-[100svh] w-full overflow-hidden flex flex-col justify-end text-[color:var(--color-cream)]"
       style={{ background: "#0A0704" }}
     >
       {/* Fondo */}
@@ -45,8 +45,8 @@ export default function HeroSection() {
         />
       </div>
 
-      {/* Overlays */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(6,4,1,0.55) 0%, rgba(6,4,1,0.05) 30%, rgba(6,4,1,0.15) 55%, rgba(6,4,1,0.85) 100%)" }} />
+      {/* Overlays — gradient superior más denso para legibilidad del titular */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(6,4,1,0.72) 0%, rgba(6,4,1,0.28) 26%, rgba(6,4,1,0.22) 50%, rgba(6,4,1,0.88) 100%)" }} />
       <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, transparent 45%, rgba(6,4,1,0.55) 100%)" }} />
 
       {/* Contenido */}
@@ -63,11 +63,17 @@ export default function HeroSection() {
         </div>
 
         {/* Title */}
-        <h1 className="n-h-display max-w-4xl text-[color:var(--color-cream)]">
+        <h1
+          className="n-h-display max-w-4xl text-[color:var(--color-cream)]"
+          style={{
+            fontWeight: 400,
+            textShadow: "0 2px 24px rgba(6,4,1,0.55), 0 1px 2px rgba(6,4,1,0.4)",
+          }}
+        >
           {loaded ? (
             <>
               <span className="n-line-mask">
-                <span className="n-line-inner n-delay-1">Flores para</span>
+                <span className="n-line-inner n-delay-1 text-[color:var(--color-cream)]">Flores para</span>
               </span>
               <span className="n-line-mask">
                 <span className="n-line-inner n-delay-2 italic text-[color:var(--color-gold-2)]" style={{ fontVariantLigatures: "common-ligatures" }}>
@@ -144,7 +150,7 @@ export default function HeroSection() {
       {/* Scroll cue — solo desktop, en móvil resta espacio útil */}
       <button
         onClick={() => scrollTo("nosotros")}
-        className="hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-6 flex-col items-center gap-2 text-[rgba(245,230,192,0.45)] hover:text-[color:var(--color-gold-2)] transition-colors"
+        className="hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-6 flex-col items-center gap-2 text-[rgba(245,230,192,0.65)] hover:text-[color:var(--color-gold-2)] transition-colors"
         aria-label="Descubrir"
       >
         <span className="text-[0.6rem] tracking-[0.32em] uppercase">Descubrir</span>
