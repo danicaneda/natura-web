@@ -12,6 +12,7 @@ const SERVICES = [
     title: "Bodas & ceremonias",
     desc: "Ramos de novia, arcos florales, centros de mesa y decoración completa. Cada boda merece flores que cuenten su historia.",
     msg: "Hola, me gustaría información para una boda.",
+    cta: "Solicitar presupuesto",
   },
   {
     id: "eventos",
@@ -19,6 +20,7 @@ const SERVICES = [
     title: "Eventos corporativos",
     desc: "Decoración floral para inauguraciones, aniversarios y celebraciones. Presencia elegante para tu marca o tu evento.",
     msg: "Hola, me gustaría información para un evento.",
+    cta: "Solicitar presupuesto",
   },
   {
     id: "comuniones",
@@ -26,6 +28,7 @@ const SERVICES = [
     title: "Comuniones & bautizos",
     desc: "Ramos, coronas, lazos y detalles florales para los momentos más especiales de la infancia. Delicados y con sentido.",
     msg: "Hola, me gustaría información para una comunión.",
+    cta: "Pedir información",
   },
   {
     id: "entrega",
@@ -33,6 +36,7 @@ const SERVICES = [
     title: "Entrega a domicilio",
     desc: "Entregamos en Reinosa y comarcas el mismo día. Sorprende a quien más quieres con naturaleza en su puerta.",
     msg: "Hola, me gustaría hacer un pedido con entrega a domicilio.",
+    cta: "Pedir ahora",
   },
 ];
 
@@ -107,7 +111,7 @@ export default function ServiciosSection() {
               </p>
 
               <span className="relative inline-flex items-center gap-2 text-[0.65rem] tracking-[0.22em] uppercase text-[color:var(--color-gold-2)] font-medium">
-                Consultar disponibilidad
+                {s.cta}
                 <ArrowUpRight size={11} className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5" />
               </span>
             </a>

@@ -90,8 +90,8 @@ function ProductCard({ p, onOpen, delay = 0 }: { p: Producto; onOpen: (p: Produc
           <span className="text-[0.6rem] tracking-[0.18em] uppercase text-[rgba(250,246,238,0.72)] font-medium">
             {p.categoria}
           </span>
-          <span className="text-[0.6rem] tracking-[0.18em] uppercase inline-flex items-center gap-1 text-[color:var(--color-gold-2)]">
-            Consultar <ArrowUpRight size={10} />
+          <span className="text-[0.6rem] tracking-[0.18em] uppercase inline-flex items-center gap-1 text-[color:var(--color-gold-2)] font-medium">
+            Ver detalle <ArrowUpRight size={10} />
           </span>
         </div>
       </div>

@@ -103,19 +103,25 @@ export default function NosotrosSection() {
                 return <span key={i} aria-hidden="true" style={style} />;
               })}
 
-              {/* Overlay tipográfico */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="font-serif text-[clamp(4rem,8vw,7rem)] leading-none text-[color:var(--color-ink-2)] opacity-[0.11]">Arte</span>
-                <span className="font-serif italic text-[clamp(4rem,8vw,7rem)] leading-none text-[color:var(--color-gold-3)] opacity-[0.18]">floral</span>
+              {/* Overlay tipográfico decorativo */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+              >
+                <span className="font-serif text-[clamp(3.5rem,7vw,7rem)] leading-none text-[color:var(--color-ink-2)] opacity-[0.09]">Arte</span>
+                <span className="font-serif italic text-[clamp(3.5rem,7vw,7rem)] leading-none text-[color:var(--color-gold-3)] opacity-[0.16]">floral</span>
               </div>
 
-              {/* Cita */}
-              <figure className="absolute bottom-10 inset-x-10 text-center">
-                <div className="mx-auto w-8 h-px bg-[color:var(--color-gold)] mb-3" />
-                <blockquote className="font-serif italic text-lg text-[color:var(--color-ink-3)] opacity-80 leading-snug">
+              {/* Cita — diferenciador emocional, legible sobre la ilustración */}
+              <figure className="absolute bottom-8 sm:bottom-10 inset-x-6 sm:inset-x-10 text-center">
+                <div className="mx-auto w-10 h-px bg-[color:var(--color-gold)] mb-3 opacity-90" />
+                <blockquote
+                  className="font-serif italic text-[clamp(0.95rem,3.2vw,1.15rem)] text-[color:var(--color-ink-2)] leading-snug"
+                  style={{ textShadow: "0 1px 0 rgba(250,246,238,0.6)" }}
+                >
                   &ldquo;Cada flor cuenta una historia&rdquo;
                 </blockquote>
-                <figcaption className="mt-2 text-[0.62rem] tracking-[0.3em] uppercase text-[color:var(--color-gold-3)] opacity-70">
+                <figcaption className="mt-2 text-[0.6rem] sm:text-[0.62rem] tracking-[0.28em] uppercase text-[color:var(--color-gold-3)] font-medium">
                   Tere · Floristería Natura
                 </figcaption>
               </figure>

@@ -333,7 +333,7 @@ export default function ContactoSection() {
               Google Maps <ArrowUpRight size={10} />
             </a>
           </div>
-          <div className="h-[380px]">
+          <div className="h-[260px] sm:h-[320px] md:h-[380px]">
             <MapaReinosa />
           </div>
         </div>

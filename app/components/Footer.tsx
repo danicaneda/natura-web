@@ -50,14 +50,14 @@ export default function Footer() {
                 <button
                   key={l.id}
                   onClick={() => document.getElementById(l.id)?.scrollIntoView({ behavior: "smooth" })}
-                  className="text-left text-sm text-[color:rgba(250,246,238,0.78)] hover:text-[color:var(--color-gold-2)] transition-colors w-fit"
+                  className="text-left text-sm text-[color:rgba(250,246,238,0.78)] hover:text-[color:var(--color-gold-2)] hover:underline underline-offset-4 decoration-[rgba(212,160,23,0.4)] transition-colors w-fit"
                 >
                   {l.label}
                 </button>
               ))}
               <a
                 href="/politica-privacidad"
-                className="text-sm text-[color:rgba(250,246,238,0.78)] hover:text-[color:var(--color-gold-2)] transition-colors w-fit"
+                className="text-sm text-[color:rgba(250,246,238,0.78)] hover:text-[color:var(--color-gold-2)] hover:underline underline-offset-4 decoration-[rgba(212,160,23,0.4)] transition-colors w-fit"
               >
                 Política de privacidad
               </a>
@@ -70,13 +70,13 @@ export default function Footer() {
             <address className="not-italic text-sm text-[color:rgba(250,246,238,0.78)] flex flex-col gap-1.5">
               <span>{SITE.address.street}</span>
               <span>{SITE.address.postalCode} {SITE.address.city}, {SITE.address.region}</span>
-              <a href={`tel:${SITE.phone.tel}`} className="hover:text-[color:var(--color-gold-2)] transition-colors w-fit">
+              <a href={`tel:${SITE.phone.tel}`} className="hover:text-[color:var(--color-gold-2)] hover:underline underline-offset-4 decoration-[rgba(212,160,23,0.4)] transition-colors w-fit">
                 {SITE.phone.display}
               </a>
-              <a href={`tel:${SITE.phone.tel2}`} className="hover:text-[color:var(--color-gold-2)] transition-colors w-fit">
+              <a href={`tel:${SITE.phone.tel2}`} className="hover:text-[color:var(--color-gold-2)] hover:underline underline-offset-4 decoration-[rgba(212,160,23,0.4)] transition-colors w-fit">
                 {SITE.phone.display2}
               </a>
-              <a href={`mailto:${SITE.email}`} className="hover:text-[color:var(--color-gold-2)] transition-colors w-fit">
+              <a href={`mailto:${SITE.email}`} className="hover:text-[color:var(--color-gold-2)] hover:underline underline-offset-4 decoration-[rgba(212,160,23,0.4)] transition-colors w-fit">
                 {SITE.email}
               </a>
             </address>

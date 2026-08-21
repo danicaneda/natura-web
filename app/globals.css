@@ -102,6 +102,7 @@ h1, h2, h3, h4, h5 {
 }
 
 ::selection { background: var(--color-gold); color: var(--color-cream); }
+input::selection, textarea::selection { background: color-mix(in srgb, var(--color-gold) 30%, transparent); color: var(--color-ink-2); }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }

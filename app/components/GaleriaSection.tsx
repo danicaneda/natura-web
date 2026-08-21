@@ -163,7 +163,7 @@ export default function GaleriaSection() {
               </div>
               <button
                 onClick={() => setShowAll(false)}
-                className="w-11 h-11 flex items-center justify-center border border-[rgba(245,230,192,0.15)] text-[color:var(--color-cream)] hover:border-[color:var(--color-gold-2)] active:bg-[rgba(212,160,23,0.08)] transition-colors"
+                className="w-11 h-11 flex items-center justify-center border border-[rgba(245,230,192,0.2)] rounded-full text-[color:var(--color-cream)] hover:border-[color:var(--color-gold-2)] active:bg-[rgba(212,160,23,0.08)] transition-colors"
                 aria-label="Cerrar galería"
               >
                 <Close size={14} />
@@ -209,7 +209,7 @@ export default function GaleriaSection() {
           <button
             ref={lbCloseRef}
             onClick={closeLB}
-            className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center border border-[rgba(245,230,192,0.15)] text-[color:var(--color-cream)] bg-[rgba(15,10,5,0.4)] backdrop-blur-sm hover:border-[color:var(--color-gold-2)] active:bg-[rgba(15,10,5,0.6)] transition-colors"
+            className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center border border-[rgba(245,230,192,0.2)] rounded-full text-[color:var(--color-cream)] bg-[rgba(15,10,5,0.4)] backdrop-blur-sm hover:border-[color:var(--color-gold-2)] active:bg-[rgba(15,10,5,0.6)] transition-colors"
             style={{ top: "max(1rem, env(safe-area-inset-top, 0px))" }}
             aria-label="Cerrar galería"
           >
@@ -217,7 +217,7 @@ export default function GaleriaSection() {
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); prevLB(); }}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center border border-[rgba(245,230,192,0.15)] text-[color:var(--color-cream)] bg-[rgba(15,10,5,0.4)] backdrop-blur-sm hover:border-[color:var(--color-gold-2)] active:bg-[rgba(15,10,5,0.6)] transition-colors"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center border border-[rgba(245,230,192,0.2)] rounded-full text-[color:var(--color-cream)] bg-[rgba(15,10,5,0.4)] backdrop-blur-sm hover:border-[color:var(--color-gold-2)] active:bg-[rgba(15,10,5,0.6)] transition-colors"
             aria-label="Anterior"
           >
             <ChevronLeft size={14} />
@@ -240,7 +240,7 @@ export default function GaleriaSection() {
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); nextLB(); }}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center border border-[rgba(245,230,192,0.15)] text-[color:var(--color-cream)] bg-[rgba(15,10,5,0.4)] backdrop-blur-sm hover:border-[color:var(--color-gold-2)] active:bg-[rgba(15,10,5,0.6)] transition-colors"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center border border-[rgba(245,230,192,0.2)] rounded-full text-[color:var(--color-cream)] bg-[rgba(15,10,5,0.4)] backdrop-blur-sm hover:border-[color:var(--color-gold-2)] active:bg-[rgba(15,10,5,0.6)] transition-colors"
             aria-label="Siguiente"
           >
             <ChevronRight size={14} />

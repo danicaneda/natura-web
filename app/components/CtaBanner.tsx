@@ -18,14 +18,17 @@ export default function CtaBanner() {
         className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden select-none"
       >
         <span
-          className="font-serif whitespace-nowrap"
+          className="font-serif"
           style={{
-            fontSize: "clamp(72px, 18vw, 240px)",
+            fontSize: "clamp(54px, 17vw, 240px)",
             color: "rgba(212,160,23,0.055)",
             letterSpacing: "0.14em",
             lineHeight: 1,
             fontWeight: 300,
-            maxWidth: "100%",
+            maxWidth: "94%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "clip",
           }}
         >
           NATURA
