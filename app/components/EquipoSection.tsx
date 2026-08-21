@@ -84,9 +84,9 @@ export default function EquipoSection() {
     <section id="equipo" className="bg-[color:var(--color-cream)]">
       <div className="n-container n-section-y">
         <SectionHeader
-          eyebrow="Personas reales"
-          title={<>El equipo <em className="text-[color:var(--color-gold)]">detrás de cada ramo</em></>}
-          subtitle="Una floristería familiar, cercana, para todos los momentos de tu vida."
+          eyebrow="Nuestro equipo"
+          title={<>Las manos <em className="text-[color:var(--color-gold)]">detrás de cada ramo</em></>}
+          subtitle="Una floristería familiar y cercana, para todos los momentos de tu vida."
         />
 
         <div className="mt-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

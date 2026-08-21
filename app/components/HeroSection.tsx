@@ -18,7 +18,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     if (!loaded) return;
-    const iv = setInterval(() => setWordIdx((i) => (i + 1) % ROTATING.length), 3200);
+    const iv = setInterval(() => setWordIdx((i) => (i + 1) % ROTATING.length), 4800);
     return () => clearInterval(iv);
   }, [loaded]);
 
@@ -58,8 +58,8 @@ export default function HeroSection() {
           style={{ opacity: loaded ? 1 : 0 }}
         >
           <span className="block w-6 sm:w-8 h-px bg-[color:var(--color-gold-2)] opacity-70" />
-          <span className="text-[0.58rem] sm:text-[0.62rem] tracking-[0.28em] sm:tracking-[0.34em] uppercase font-medium text-[rgba(245,230,192,0.7)]">
-            Floristería · {SITE.city} · {SITE.region}
+          <span className="text-[0.58rem] sm:text-[0.62rem] tracking-[0.28em] sm:tracking-[0.34em] uppercase font-medium text-[rgba(245,230,192,0.78)]">
+            +15 años · Familiar · {SITE.city}
           </span>
         </div>
 
@@ -114,22 +114,22 @@ export default function HeroSection() {
             transitionDelay: "650ms",
           }}
         >
-          <button
-            onClick={() => scrollTo("productos")}
-            className="n-btn n-btn-gold justify-center"
-          >
-            Ver colección
-            <ArrowRight size={14} />
-          </button>
           <a
             href={SITE.whatsapp.url("Hola, me gustaría hacer un pedido.")}
             target="_blank"
             rel="noopener noreferrer"
-            className="n-btn n-btn-ghost-dark justify-center"
+            className="n-btn n-btn-whatsapp justify-center"
           >
             <WhatsAppIcon size={13} />
             Pedir por WhatsApp
           </a>
+          <button
+            onClick={() => scrollTo("productos")}
+            className="n-btn n-btn-ghost-dark justify-center"
+          >
+            Ver colección
+            <ArrowRight size={14} />
+          </button>
         </div>
 
         {/* Prueba social */}

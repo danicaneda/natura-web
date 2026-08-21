@@ -52,7 +52,7 @@ function ProductCard({ p, onOpen, delay = 0 }: { p: Producto; onOpen: (p: Produc
     <button
       ref={ref}
       onClick={() => onOpen(p)}
-      className="group relative text-left overflow-hidden bg-[color:var(--color-cream-2)] transition-all duration-500"
+      className="group relative text-left overflow-hidden bg-[color:var(--color-cream-2)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[var(--shadow-md)] focus-visible:-translate-y-1 focus-visible:shadow-[var(--shadow-md)]"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(20px)",
@@ -77,11 +77,11 @@ function ProductCard({ p, onOpen, delay = 0 }: { p: Producto; onOpen: (p: Produc
       )}
 
       {/* Overlay */}
-      <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col gap-1.5" style={{ background: "linear-gradient(to top, rgba(15,10,5,0.9) 0%, rgba(15,10,5,0.5) 55%, transparent 100%)" }}>
+      <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col gap-2" style={{ background: "linear-gradient(to top, rgba(15,10,5,0.92) 0%, rgba(15,10,5,0.55) 55%, transparent 100%)" }}>
         <div className="flex items-end justify-between gap-3">
           <h3 className="font-serif text-lg text-[color:var(--color-cream)] leading-tight line-clamp-1">{p.nombre}</h3>
           {price != null && (
-            <span className={`text-sm font-medium ${hasOffer ? "text-[#F5A0A0]" : "text-[color:var(--color-gold-2)]"}`}>
+            <span className={`font-serif text-xl md:text-2xl font-medium leading-none tabular-nums ${hasOffer ? "text-[#F5A0A0]" : "text-[color:var(--color-gold-2)]"}`}>
               {formatPrice(price)}
             </span>
           )}
@@ -90,7 +90,7 @@ function ProductCard({ p, onOpen, delay = 0 }: { p: Producto; onOpen: (p: Produc
           <span className="text-[0.6rem] tracking-[0.18em] uppercase text-[rgba(250,246,238,0.72)] font-medium">
             {p.categoria}
           </span>
-          <span className="text-[0.6rem] tracking-[0.18em] uppercase inline-flex items-center gap-1 text-[color:var(--color-gold-2)] font-medium">
+          <span className="text-[0.6rem] tracking-[0.18em] uppercase inline-flex items-center gap-1 text-[color:var(--color-gold-2)] font-medium transition-transform duration-300 group-hover:translate-x-0.5">
             Ver detalle <ArrowUpRight size={10} />
           </span>
         </div>

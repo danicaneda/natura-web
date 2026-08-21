@@ -11,6 +11,7 @@ const SERVICES = [
     kicker: "01",
     title: "Bodas & ceremonias",
     desc: "Ramos de novia, arcos florales, centros de mesa y decoración completa. Cada boda merece flores que cuenten su historia.",
+    features: ["Presupuesto sin compromiso", "Prueba previa del ramo"],
     msg: "Hola, me gustaría información para una boda.",
     cta: "Solicitar presupuesto",
   },
@@ -19,6 +20,7 @@ const SERVICES = [
     kicker: "02",
     title: "Eventos corporativos",
     desc: "Decoración floral para inauguraciones, aniversarios y celebraciones. Presencia elegante para tu marca o tu evento.",
+    features: ["Respuesta en 24h", "Factura empresa"],
     msg: "Hola, me gustaría información para un evento.",
     cta: "Solicitar presupuesto",
   },
@@ -27,6 +29,7 @@ const SERVICES = [
     kicker: "03",
     title: "Comuniones & bautizos",
     desc: "Ramos, coronas, lazos y detalles florales para los momentos más especiales de la infancia. Delicados y con sentido.",
+    features: ["Diseño a medida", "Foto previa por WhatsApp"],
     msg: "Hola, me gustaría información para una comunión.",
     cta: "Pedir información",
   },
@@ -35,6 +38,7 @@ const SERVICES = [
     kicker: "04",
     title: "Entrega a domicilio",
     desc: "Entregamos en Reinosa y comarcas el mismo día. Sorprende a quien más quieres con naturaleza en su puerta.",
+    features: ["Mismo día en Reinosa", "Pago con Bizum"],
     msg: "Hola, me gustaría hacer un pedido con entrega a domicilio.",
     cta: "Pedir ahora",
   },
@@ -110,7 +114,28 @@ export default function ServiciosSection() {
                 {s.desc}
               </p>
 
-              <span className="relative inline-flex items-center gap-2 text-[0.65rem] tracking-[0.22em] uppercase text-[color:var(--color-gold-2)] font-medium">
+              <ul className="relative flex flex-wrap gap-x-4 gap-y-1 pt-1" aria-label="Incluye">
+                {s.features.map((f) => (
+                  <li
+                    key={f}
+                    className="inline-flex items-center gap-1.5 text-[0.68rem] text-[color:rgba(250,246,238,0.85)]"
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 10 10"
+                      fill="none"
+                      aria-hidden="true"
+                      className="text-[color:var(--color-gold-2)]"
+                    >
+                      <path d="M1.5 5.2l2.3 2.3L8.8 2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <span className="relative inline-flex items-center gap-2 text-[0.65rem] tracking-[0.22em] uppercase text-[color:var(--color-gold-2)] font-medium mt-2">
                 {s.cta}
                 <ArrowUpRight size={11} className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5" />
               </span>

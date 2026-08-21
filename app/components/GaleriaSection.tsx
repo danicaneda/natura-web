@@ -123,8 +123,21 @@ export default function GaleriaSection() {
                         priority={isHero}
                         sizes={isHero ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 50vw, 33vw"}
                       />
+                      {/* Chip categoría siempre visible (esquina superior) */}
+                      {img.categoria && (
+                        <span
+                          className="absolute top-2.5 left-2.5 px-2 py-1 text-[0.55rem] tracking-[0.16em] uppercase font-medium text-[color:var(--color-cream)] rounded-full backdrop-blur-sm"
+                          style={{ background: "rgba(15,10,5,0.4)" }}
+                        >
+                          {img.categoria}
+                        </span>
+                      )}
+                      {/* Título visible siempre en la barra inferior (más intenso en hover) */}
                       {img.titulo && (
-                        <span className="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(to top, rgba(15,10,5,0.75), transparent)" }}>
+                        <span
+                          className="absolute inset-x-0 bottom-0 p-3 sm:p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          style={{ background: "linear-gradient(to top, rgba(15,10,5,0.85), transparent)" }}
+                        >
                           <span className="text-sm text-[color:var(--color-cream)] font-serif">{img.titulo}</span>
                         </span>
                       )}

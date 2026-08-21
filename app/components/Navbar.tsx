@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import BotanicalMark from "./ui/BotanicalMark";
 import OpenStatusBadge from "./OpenStatusBadge";
-import { WhatsAppIcon } from "./ui/Icons";
+import { Google, Star, WhatsAppIcon } from "./ui/Icons";
 import { SITE } from "@/app/lib/site";
 
 const NAV_LINKS = [
@@ -213,6 +213,24 @@ export default function Navbar() {
             className="n-btn n-btn-primary mt-4 justify-center"
           >
             Llamar · {SITE.phone.display}
+          </a>
+
+          {/* Rating Google discreto */}
+          <a
+            href={SITE.google.reviewsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 flex items-center justify-center gap-2 text-[0.72rem] text-[color:var(--color-ink-4)] hover:text-[color:var(--color-gold-3)] transition-colors"
+          >
+            <span className="flex gap-0.5 text-[color:var(--color-gold)]">
+              {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={11} />)}
+            </span>
+            <span className="font-medium">{SITE.google.rating.toFixed(1)}</span>
+            <span aria-hidden="true">·</span>
+            <span className="inline-flex items-center gap-1">
+              <Google size={11} />
+              {SITE.google.reviewCount} reseñas
+            </span>
           </a>
         </div>
       </div>

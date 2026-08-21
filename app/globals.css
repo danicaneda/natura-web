@@ -26,6 +26,11 @@
 
   --color-danger:   #8B2A2A;
   --color-success:  #2E7D32;
+
+  /* Verde botánico — para chips de "En temporada", frescura, iconos de naturaleza */
+  --color-leaf:    #3F5A34;
+  --color-leaf-2:  #5C7A4E;
+  --color-leaf-3:  #E4EBDD;
 }
 
 :root {
@@ -470,6 +475,13 @@ button:focus-visible, a:focus-visible { outline-offset: 4px; }
   70%       { box-shadow: 0 0 0 6px rgba(46,125,50,0); }
 }
 .n-status-dot { animation: n-pulse-dot 2.4s ease-in-out infinite; }
+
+/* Pulse sutil WhatsApp FAB — llama la atención cada ~15s sin ser molesto */
+@keyframes n-wa-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(18,140,126,0.55); }
+  100% { box-shadow: 0 0 0 18px rgba(18,140,126,0); }
+}
+.n-wa-pulse { animation: n-wa-pulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
 
 /* Scroll progress */
 #scroll-progress {

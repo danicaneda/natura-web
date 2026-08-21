@@ -30,7 +30,7 @@ const FALLBACK: Testimonio[] = [
 ];
 
 const VISIBLE_DESKTOP = 2;
-const AUTOPLAY_MS = 6500;
+const AUTOPLAY_MS = 10000; // 10s — antes 6.5s era agresivo para lectura
 
 function Card({ t }: { t: Testimonio }) {
   return (

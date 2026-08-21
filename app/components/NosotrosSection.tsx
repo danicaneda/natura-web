@@ -153,9 +153,14 @@ export default function NosotrosSection() {
                 ["Arreglos a medida",     "Cada composición es única, pensada para ti."],
                 ["Entrega a domicilio",   "En Reinosa y comarcas, con el mismo mimo."],
                 ["Pasión floral",         "Quince años dedicados al detalle."],
-              ].map(([label, desc]) => (
+              ].map(([label, desc], i) => (
                 <li key={label} className="flex items-start gap-3 text-sm">
-                  <BotanicalMark size={14} color="var(--color-gold)" className="mt-1 flex-none" />
+                  <span
+                    className="mt-0.5 flex-none w-6 tabular-nums text-[0.62rem] tracking-[0.24em] font-medium text-[color:var(--color-gold-3)]"
+                    aria-hidden="true"
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <span>
                     <span className="text-[color:var(--color-ink-2)] font-medium">{label}</span>
                     <span className="text-[color:var(--color-ink-4)]"> — {desc}</span>
