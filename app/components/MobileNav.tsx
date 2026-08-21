@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { WhatsAppIcon } from "./ui/Icons";
-import { SITE } from "@/app/lib/site";
 
 const ITEMS = [
   {
@@ -109,22 +107,10 @@ export default function MobileNav() {
               >
                 {item.svg}
               </span>
-              <span className="text-[0.55rem] tracking-[0.12em] uppercase font-medium">{item.label}</span>
+              <span className="text-[0.58rem] tracking-[0.14em] uppercase font-medium">{item.label}</span>
             </button>
           );
         })}
-
-        <a
-          href={SITE.whatsapp.url("Hola, me gustaría hacer un pedido.")}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 flex flex-col items-center justify-center gap-1 text-white relative overflow-hidden"
-          style={{ background: "linear-gradient(180deg, #14A896, #128C7E)" }}
-          aria-label="Escribir por WhatsApp"
-        >
-          <WhatsAppIcon size={20} />
-          <span className="text-[0.55rem] tracking-[0.12em] uppercase font-semibold">Pedir</span>
-        </a>
       </div>
     </nav>
   );

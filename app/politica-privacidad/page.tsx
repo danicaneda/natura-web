@@ -4,8 +4,9 @@ import { SITE } from "@/app/lib/site";
 
 export const metadata: Metadata = {
   title: "Política de privacidad",
-  description: "Política de privacidad y tratamiento de datos de Floristería Natura, Reinosa.",
-  robots: { index: false, follow: false },
+  description: "Política de privacidad y tratamiento de datos de Floristería Natura, Reinosa (Cantabria). Cómo usamos los datos del formulario de contacto.",
+  robots: { index: false, follow: true },
+  alternates: { canonical: "/politica-privacidad" },
 };
 
 function LegalSection({ title, children }: { title: string; children: React.ReactNode }) {

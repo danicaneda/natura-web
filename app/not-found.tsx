@@ -4,6 +4,8 @@ import { SITE } from "./lib/site";
 
 export const metadata = {
   title: "Página no encontrada",
+  description: "La página que buscas no existe o ha cambiado de lugar. Vuelve al inicio o contáctanos por WhatsApp.",
+  robots: { index: false, follow: true },
 };
 
 export default function NotFound() {

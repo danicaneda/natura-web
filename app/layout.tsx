@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SITE } from "./lib/site";
 import "./globals.css";
 
@@ -139,6 +140,22 @@ const jsonLd = {
     { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday"], opens: "17:00", closes: "20:00" },
     { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday"], opens: "09:30", closes: "14:00" },
   ],
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: SITE.phone.tel,
+      contactType: "customer service",
+      areaServed: "ES",
+      availableLanguage: ["Spanish"],
+    },
+    {
+      "@type": "ContactPoint",
+      telephone: SITE.phone.tel2,
+      contactType: "sales",
+      areaServed: "ES",
+      availableLanguage: ["Spanish"],
+    },
+  ],
   sameAs: [SITE.google.mapsUrl],
   hasMap: SITE.google.mapsUrl,
   aggregateRating: {
@@ -148,6 +165,22 @@ const jsonLd = {
     bestRating: "5",
     worstRating: "1",
   },
+  makesOffer: [
+    { "@type": "Offer", itemOffered: { "@type": "Service", name: "Ramos de novia y decoración de bodas" } },
+    { "@type": "Offer", itemOffered: { "@type": "Service", name: "Decoración floral para eventos y celebraciones" } },
+    { "@type": "Offer", itemOffered: { "@type": "Service", name: "Ramos y coronas para funerales" } },
+    { "@type": "Offer", itemOffered: { "@type": "Service", name: "Entrega de flores a domicilio en Reinosa y comarca" } },
+  ],
+};
+
+const webSiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${SITE.domain}#website`,
+  url: SITE.domain,
+  name: "Natura · Flores y Plantas",
+  publisher: { "@id": `${SITE.domain}#business` },
+  inLanguage: "es-ES",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -160,11 +193,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
+        />
       </head>
       <body>
         <a href="#main" className="n-skip">Saltar al contenido</a>
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

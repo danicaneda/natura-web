@@ -35,10 +35,11 @@ export default function HeroSection() {
       <div className="absolute inset-0">
         <Image
           src="/hero.jpeg"
-          alt=""
+          alt="Composición floral artesanal de Floristería Natura en Reinosa, Cantabria"
           fill
           priority
-          quality={88}
+          fetchPriority="high"
+          quality={90}
           sizes="100vw"
           className="n-ken-burns object-cover"
           style={{ objectPosition: "center 30%", filter: "brightness(0.62) saturate(0.92)" }}

@@ -1,17 +1,19 @@
 {
   "name": "Natura — Flores y Plantas",
   "short_name": "Natura",
-  "description": "Floristería artesanal en Reinosa, Cantabria.",
+  "description": "Floristería artesanal en Reinosa, Cantabria. Ramos, plantas y arte floral con firma propia.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#FAF6EE",
-  "theme_color": "#B8860B",
+  "theme_color": "#A6790A",
   "orientation": "portrait-primary",
   "lang": "es",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/hero.jpeg",
-      "sizes": "any",
+      "sizes": "1200x630",
       "type": "image/jpeg",
       "purpose": "any"
     }
@@ -20,13 +22,21 @@
   "shortcuts": [
     {
       "name": "Pedir por WhatsApp",
-      "short_name": "Pedir",
+      "short_name": "WhatsApp",
+      "description": "Enviar un mensaje directo por WhatsApp",
       "url": "https://wa.me/34606598156?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20un%20pedido"
     },
     {
       "name": "Ver colección",
       "short_name": "Colección",
+      "description": "Explorar el catálogo de flores y plantas",
       "url": "/#productos"
+    },
+    {
+      "name": "Contactar",
+      "short_name": "Contactar",
+      "description": "Formulario de contacto",
+      "url": "/#contacto"
     }
   ]
 }
