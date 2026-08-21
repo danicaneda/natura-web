@@ -209,17 +209,8 @@ export default function Navbar() {
             );
           })}
           <a
-            href={SITE.whatsapp.url("Hola, me gustaría hacer una consulta.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="n-btn n-btn-whatsapp mt-4 justify-center"
-          >
-            <WhatsAppIcon size={13} />
-            <span>Pedir por WhatsApp</span>
-          </a>
-          <a
             href={`tel:${SITE.phone.tel}`}
-            className="n-btn n-btn-ghost mt-2 justify-center"
+            className="n-btn n-btn-primary mt-4 justify-center"
           >
             Llamar · {SITE.phone.display}
           </a>
