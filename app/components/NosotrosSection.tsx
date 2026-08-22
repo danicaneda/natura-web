@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import BotanicalMark from "./ui/BotanicalMark";
+import Image from "next/image";
 import { ArrowRight } from "./ui/Icons";
 import { useReveal } from "@/app/lib/useReveal";
 
@@ -57,33 +57,44 @@ export default function NosotrosSection() {
     <section id="nosotros" className="bg-[color:var(--color-cream)]">
       <div className="n-container n-section-y">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-          {/* Left — composición editorial */}
+          {/* Left — retrato editorial de Tere */}
           <div
             ref={left.ref}
             className={`n-reveal ${left.visible ? "is-visible" : ""} lg:col-span-5 relative`}
           >
-            <div className="relative aspect-[4/5] overflow-hidden bg-[color:var(--color-cream-2)]">
-              {/* SVG botánico grande */}
-              <svg viewBox="0 0 400 500" fill="none" aria-hidden="true" className="absolute inset-0 w-full h-full opacity-[0.16]">
-                <path d="M200 480 Q195 340 200 60" stroke="#6B4A0A" strokeWidth="3.5" strokeLinecap="round" />
-                <ellipse cx="200" cy="280" rx="70" ry="130" transform="rotate(20 200 280)" fill="#6B4A0A" opacity="0.85" />
-                <ellipse cx="200" cy="200" rx="58" ry="105" transform="rotate(-16 200 200)" fill="#6B4A0A" opacity="0.75" />
-                <ellipse cx="200" cy="130" rx="42" ry="85" transform="rotate(8 200 130)" fill="#6B4A0A" opacity="0.65" />
-                <path d="M200 240 Q262 210 300 190" stroke="#6B4A0A" strokeWidth="2" strokeLinecap="round" />
-                <ellipse cx="290" cy="192" rx="34" ry="60" transform="rotate(-30 290 192)" fill="#6B4A0A" opacity="0.55" />
-                <path d="M200 175 Q140 148 105 130" stroke="#6B4A0A" strokeWidth="2" strokeLinecap="round" />
-                <ellipse cx="115" cy="132" rx="30" ry="55" transform="rotate(30 115 132)" fill="#6B4A0A" opacity="0.5" />
-                <circle cx="200" cy="62" r="14" fill="#6B4A0A" opacity="0.5" />
-              </svg>
+            <figure className="relative aspect-[4/5] overflow-hidden bg-[color:var(--color-cream-2)]">
+              {/* Foto */}
+              <Image
+                src="/tere.jpeg"
+                alt="Tere, fundadora de Floristería Natura en Reinosa, sonriendo entre flores"
+                fill
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-cover"
+                style={{ objectPosition: "center 20%" }}
+                quality={88}
+              />
 
-              {/* Marco */}
-              <div className="absolute inset-6 border border-[rgba(184,134,11,0.22)]" aria-hidden="true" />
+              {/* Sombreado inferior para asentar la cita */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none"
+                style={{
+                  background:
+                    "linear-gradient(to top, rgba(15,10,5,0.72) 0%, rgba(15,10,5,0.28) 45%, transparent 100%)",
+                }}
+              />
+
+              {/* Marco fino interior */}
+              <div
+                className="absolute inset-4 sm:inset-6 border border-[rgba(245,230,192,0.28)] pointer-events-none"
+                aria-hidden="true"
+              />
               {/* Esquinas doradas */}
               {[
-                { top: 12, left: 12,   corners: ["t","l"] },
-                { top: 12, right: 12,  corners: ["t","r"] },
-                { bottom: 12, left: 12, corners: ["b","l"] },
-                { bottom: 12, right: 12,corners: ["b","r"] },
+                { top: 10, left: 10,   corners: ["t","l"] },
+                { top: 10, right: 10,  corners: ["t","r"] },
+                { bottom: 10, left: 10, corners: ["b","l"] },
+                { bottom: 10, right: 10,corners: ["b","r"] },
               ].map((pos, i) => {
                 const style: React.CSSProperties = {
                   position: "absolute",
@@ -99,33 +110,38 @@ export default function NosotrosSection() {
                   left: pos.left,
                   right: pos.right,
                   bottom: pos.bottom,
+                  pointerEvents: "none",
                 };
                 return <span key={i} aria-hidden="true" style={style} />;
               })}
 
-              {/* Overlay tipográfico decorativo */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+              {/* Chip identificativo esquina superior */}
+              <span
+                className="absolute top-6 left-6 sm:top-8 sm:left-8 inline-flex items-center gap-2 px-3 py-1.5 text-[0.58rem] tracking-[0.24em] uppercase font-medium text-[color:var(--color-cream)] rounded-full backdrop-blur-sm"
+                style={{ background: "rgba(15,10,5,0.35)", border: "1px solid rgba(245,230,192,0.2)" }}
               >
-                <span className="font-serif text-[clamp(3.5rem,7vw,7rem)] leading-none text-[color:var(--color-ink-2)] opacity-[0.09]">Arte</span>
-                <span className="font-serif italic text-[clamp(3.5rem,7vw,7rem)] leading-none text-[color:var(--color-gold-3)] opacity-[0.16]">floral</span>
-              </div>
+                <span
+                  aria-hidden="true"
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ background: "var(--color-gold-2)" }}
+                />
+                Tere · Fundadora
+              </span>
 
-              {/* Cita — diferenciador emocional, legible sobre la ilustración */}
-              <figure className="absolute bottom-8 sm:bottom-10 inset-x-6 sm:inset-x-10 text-center">
-                <div className="mx-auto w-10 h-px bg-[color:var(--color-gold)] mb-3 opacity-90" />
+              {/* Cita — diferenciador emocional sobre el sombreado */}
+              <figcaption className="absolute bottom-8 sm:bottom-10 inset-x-6 sm:inset-x-10">
+                <div className="w-10 h-px bg-[color:var(--color-gold-2)] mb-3 opacity-90" />
                 <blockquote
-                  className="font-serif italic text-[clamp(0.95rem,3.2vw,1.15rem)] text-[color:var(--color-ink-2)] leading-snug"
-                  style={{ textShadow: "0 1px 0 rgba(250,246,238,0.6)" }}
+                  className="font-serif italic text-[clamp(1rem,3vw,1.25rem)] text-[color:var(--color-cream)] leading-snug"
+                  style={{ textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}
                 >
-                  &ldquo;Cada flor cuenta una historia&rdquo;
+                  &ldquo;Cada flor cuenta una historia.&rdquo;
                 </blockquote>
-                <figcaption className="mt-2 text-[0.6rem] sm:text-[0.62rem] tracking-[0.28em] uppercase text-[color:var(--color-gold-3)] font-medium">
-                  Tere · Floristería Natura
-                </figcaption>
-              </figure>
-            </div>
+                <p className="mt-3 text-[0.6rem] sm:text-[0.62rem] tracking-[0.28em] uppercase text-[rgba(245,230,192,0.75)] font-medium">
+                  Floristería Natura · desde 2010
+                </p>
+              </figcaption>
+            </figure>
           </div>
 
           {/* Right — texto */}
