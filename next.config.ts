@@ -10,7 +10,7 @@ const CSP = [
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",
-  `img-src 'self' data: blob: ${BACKEND} https://res.cloudinary.com https://*.cloudinary.com https://unpkg.com https://*.tile.openstreetmap.org`,
+  `img-src 'self' data: blob: ${BACKEND} https://res.cloudinary.com https://*.cloudinary.com https://storage.googleapis.com https://unpkg.com https://*.tile.openstreetmap.org`,
   `connect-src 'self' ${BACKEND} https://*.tile.openstreetmap.org`,
   "frame-src 'none'",
   "object-src 'none'",
@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "natura-api.onrender.com"                  },
       { protocol: "https", hostname: "res.cloudinary.com"                       },
       { protocol: "https", hostname: "*.cloudinary.com"                         },
+      { protocol: "https", hostname: "storage.googleapis.com"                   },
     ],
   },
   async headers() {
