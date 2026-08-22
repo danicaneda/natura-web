@@ -4,8 +4,9 @@ const BACKEND = process.env.BACKEND_URL ?? 'http://localhost:8001';
 
 export const revalidate = 120;
 
+// Cache corto durante la migración de galería. Subiremos a max-age=600 más adelante.
 const CACHE_HEADERS = {
-  'Cache-Control': 'public, max-age=120, s-maxage=600, stale-while-revalidate=1800',
+  'Cache-Control': 'public, max-age=60, s-maxage=120, stale-while-revalidate=300',
 };
 
 export async function GET(request: Request) {
