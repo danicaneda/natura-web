@@ -6,8 +6,8 @@ import { ArrowRight } from "./ui/Icons";
 import { useReveal } from "@/app/lib/useReveal";
 
 const STATS = [
-  { value: 15,   label: "Años cuidando cada flor",  suffix: "+" },
-  { value: 120,  label: "Bodas y eventos",          suffix: "+" },
+  { value: 30,   label: "Años cuidando cada flor",  suffix: "+" },
+  { value: 300,  label: "Bodas y eventos",          suffix: "+" },
   { value: 5.0,  label: "Valoración en Google",     suffix: "" },
   { value: 100,  label: "Recomendaciones reales",   suffix: "%" },
 ];
@@ -138,7 +138,7 @@ export default function NosotrosSection() {
                   &ldquo;Cada flor cuenta una historia.&rdquo;
                 </blockquote>
                 <p className="mt-3 text-[0.6rem] sm:text-[0.62rem] tracking-[0.28em] uppercase text-[rgba(245,230,192,0.75)] font-medium">
-                  Floristería Natura · desde 2010
+                  Floristería Natura · desde 1995
                 </p>
               </figcaption>
             </figure>
@@ -157,10 +157,10 @@ export default function NosotrosSection() {
             </h2>
 
             <p className="n-lead max-w-lg">
-              Tere lleva más de quince años convirtiendo flores en emociones.
-              Lo que empezó como vocación se ha convertido en el referente
-              floral de Cantabria — cada ramo lleva su firma: hecho a mano,
-              pensado para ti, con las flores más frescas de temporada.
+              Tere lleva más de treinta años convirtiendo flores en emociones.
+              Lo que empezó en 1995 como vocación se ha convertido en el
+              referente floral de Cantabria — cada ramo lleva su firma: hecho
+              a mano, pensado para ti, con las flores más frescas de temporada.
             </p>
 
             <ul className="grid gap-3 max-w-lg">
@@ -168,7 +168,7 @@ export default function NosotrosSection() {
                 ["Frescura garantizada", "Flores de temporada, renovadas cada día."],
                 ["Arreglos a medida",     "Cada composición es única, pensada para ti."],
                 ["Entrega a domicilio",   "En Reinosa y comarcas, con el mismo mimo."],
-                ["Pasión floral",         "Quince años dedicados al detalle."],
+                ["Pasión floral",         "Tres décadas dedicadas al detalle."],
               ].map(([label, desc], i) => (
                 <li key={label} className="flex items-start gap-3 text-sm">
                   <span

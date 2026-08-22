@@ -59,7 +59,7 @@ export default function HeroSection() {
         >
           <span className="block w-6 sm:w-8 h-px bg-[color:var(--color-gold-2)] opacity-70" />
           <span className="text-[0.58rem] sm:text-[0.62rem] tracking-[0.28em] sm:tracking-[0.34em] uppercase font-medium text-[rgba(245,230,192,0.78)]">
-            +15 años · Familiar · {SITE.city}
+            Desde 1995 · Familiar · {SITE.city}
           </span>
         </div>
 
@@ -102,7 +102,7 @@ export default function HeroSection() {
           style={{ opacity: loaded ? 1 : 0, transitionDelay: "500ms" }}
         >
           Ramos, plantas y arte floral con firma propia.
-          Más de quince años cuidando cada flor en {SITE.city}.
+          Más de treinta años cuidando cada flor en {SITE.city}.
         </p>
 
         {/* CTAs */}

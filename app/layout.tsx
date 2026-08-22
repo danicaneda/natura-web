@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     siteName: "Natura Flores & Plantas",
     title: "Natura · Floristería artesanal en Reinosa",
     description:
-      "Ramos, plantas y arte floral con firma propia en Reinosa. ★ 5.0 en Google · +15 años cuidando cada flor.",
+      "Ramos, plantas y arte floral con firma propia en Reinosa. ★ 5.0 en Google · desde 1995 cuidando cada flor.",
     url: SITE.domain,
     locale: "es_ES",
     images: [
@@ -115,6 +115,16 @@ const jsonLd = {
   telephone: SITE.phone.tel,
   email: SITE.email,
   priceRange: "€€",
+  foundingDate: SITE.founded.toString(),
+  foundingLocation: {
+    "@type": "Place",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: SITE.address.city,
+      addressRegion: SITE.address.region,
+      addressCountry: SITE.address.country,
+    },
+  },
   image: `${SITE.domain}/hero.jpeg`,
   logo: `${SITE.domain}/hero.jpeg`,
   address: {

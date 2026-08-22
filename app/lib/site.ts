@@ -27,6 +27,7 @@ export const SITE = {
   },
   email: "terear@hotmail.es",
   domain: "https://www.floresyplantasnatura.es",
+  founded: 1995,
   backend: {
     // Backend público (FastAPI en Render). Se puede sobrescribir con
     // NEXT_PUBLIC_BACKEND_URL en Vercel si algún día se cambia el host.

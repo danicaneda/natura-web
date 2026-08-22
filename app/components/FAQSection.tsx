@@ -20,7 +20,7 @@ const FAQS = [
   },
   {
     q: "¿Hacéis decoración de bodas y eventos?",
-    a: "Es uno de nuestros servicios estrella. Más de 15 años decorando bodas en Cantabria: ramos de novia a medida, ceremonia e iglesia, centros de mesa, arcos florales. Presupuesto sin compromiso.",
+    a: "Es uno de nuestros servicios estrella. Más de 30 años decorando bodas en Cantabria: ramos de novia a medida, ceremonia e iglesia, centros de mesa, arcos florales. Presupuesto sin compromiso.",
   },
   {
     q: "¿Tenéis flores para funeral?",
